@@ -22,6 +22,11 @@ function preload() {
 var bg;
 var platform1, platform2;
 
+var player;
+var point;
+var dec = false;
+
+
 function create() {
 
   bg = game.add.tileSprite(0, 0, 1200, 600, 'background');
@@ -34,14 +39,22 @@ function create() {
   //var sprite2 = game.add.sprite(0, 0, 'platform2').alignTo(sprite1, Phaser.RIGHT_CENTER, 16);
   // var sprite3 = game.add.sprite(0, 0, 'platform2').alignTo(sprite2, Phaser.RIGHT_CENTER, 16);
   // var sprite4 = game.add.sprite(0, 0, 'platform2').alignTo(sprite3, Phaser.RIGHT_CENTER, 16);
-  var platformSpriteX = platformX+sprite1.width;
-  for(var i=0; i<10;i++){
-    var sprite = game.add.sprite(platformSpriteX, platformY, 'platform2');
 
-    platformSpriteX = platformSpriteX+sprite.width;
+  var platformSpriteX = platformX + sprite1.width;
+  for (var i = 0; i < 10; i++) {
+    var sprite = game.add.sprite(platformSpriteX, platformY, 'platform2');
+    platformSpriteX = platformSpriteX + sprite.width;
   }
 
-  //sprite1.width=150;
+  point = new Phaser.Point(800, 170);
+
+  player = game.add.sprite(point.x, point.y, 'player');
+   player.height=100;
+  player.width = 100;
+
+  game.input.onDown.add(updateAnchor, this);
+
+
 
 
 
