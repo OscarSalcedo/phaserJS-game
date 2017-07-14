@@ -10,6 +10,7 @@ var game = new Phaser.Game(1200, 600, Phaser.CANVAS, 'phaser-example', { preload
 
 function preload() {
   game.stage.backgroundColor = '#007236';
+  _loadSprites();
 }
 
 var bg;
