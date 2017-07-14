@@ -16,7 +16,7 @@ function preload() {
 var bg;
 var platform1, platform2;
 var cursors;
-var player;
+var player, bird;
 var point;
 var dec = false;
 
@@ -51,6 +51,8 @@ function _loadSprites() {
   game.load.image('platform1', 'src/assets/shared/platform-1.png');
   game.load.image('platform2', 'src/assets/shared/platform-1.png');
   game.load.image('player', 'src/assets/shared/player.png');
+  game.load.image('bird', 'src/assets/shared/bird.png');
+  game.load.image('box', 'src/assets/shared/box.png');
 }
 // ##### END LOAD SPRITES
 
@@ -59,6 +61,7 @@ function _loadSprites() {
 function _loadComponents() {
   _loadPlatform();
   _loadPlayer();
+  _loadBirdMoving();
 }
 
 function _loadPlayer() {
@@ -87,6 +90,35 @@ function _loadPlatform() {
     platformSpriteX = platformSpriteX + sprite.width;
   }
 }
+
+function _loadBirdMoving() {
+  game.physics.startSystem(Phaser.Physics.ARCADE);
+
+  platform1 = game.add.sprite(300, 200, 'platform1');
+  platform1.name = 'platform1';
+  game.physics.enable(platform1, Phaser.Physics.ARCADE);
+  platform1.body.collideWorldBounds = true;
+  platform1.body.checkCollision.up = false;
+  platform1.body.checkCollision.down = false;
+  //platform1.body.immovable = true;
+  //platform1.body.bounce.x = 0.8;
+
+  //Moviment + colisió de l'ocell
+  bird = game.add.sprite(0, 210, 'bird', 4);
+  //Mida
+  bird.width = 50;
+  bird.height = 40;
+  game.physics.enable(bird, Phaser.Physics.ARCADE);
+  bird.name = 'bird';
+  bird.body.collideWorldBounds = true;
+  bird.body.bounce.setTo(1, 1);
+  //Velocitat
+  bird.body.velocity.x = 200;
+}
+function _loadBox(){
+
+}
+
 // #### END LOAD VISUAL COMPONENTS
 
 // ##### MOVE PLAYER WITH ARROWS
@@ -98,7 +130,10 @@ function _moveWithCursos() {
     player.body.velocity.x = 300;
   }
   else if (cursors.up.isDown) {
-    player.body.velocity.y = -300;
+    player.body.position.y = 800;
+  }
+  else if(cursors.up.isUp){
+    player.body.position.y = 500;
   }
   else if (cursors.down.isDown) {
     player.body.velocity.y = 300;
