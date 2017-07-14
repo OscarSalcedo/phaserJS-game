@@ -30,30 +30,26 @@ var dec = false;
 function create() {
 
   bg = game.add.tileSprite(0, 0, 1200, 600, 'background');
-  //platform1 = game.add.sprite(0, 0, 'platform1');
 
 
-  var platformX = 300;
-  var platformY = 250;
+  var platformX = 0;
+  var platformY = 550;
   var sprite1 = game.add.sprite(platformX, platformY, 'platform2');
-  //var sprite2 = game.add.sprite(0, 0, 'platform2').alignTo(sprite1, Phaser.RIGHT_CENTER, 16);
-  // var sprite3 = game.add.sprite(0, 0, 'platform2').alignTo(sprite2, Phaser.RIGHT_CENTER, 16);
-  // var sprite4 = game.add.sprite(0, 0, 'platform2').alignTo(sprite3, Phaser.RIGHT_CENTER, 16);
-
-  var platformSpriteX = platformX + sprite1.width;
-  for (var i = 0; i < 10; i++) {
+  sprite1.width = 150;
+  var platformSpriteX = platformX+sprite1.width;
+  for(var i=0; i<10;i++){
     var sprite = game.add.sprite(platformSpriteX, platformY, 'platform2');
-    platformSpriteX = platformSpriteX + sprite.width;
+    sprite.width= 150;
+    platformSpriteX = platformSpriteX+sprite.width;
   }
 
-  point = new Phaser.Point(800, 170);
+   point = new Phaser.Point(800, 170);
 
   player = game.add.sprite(point.x, point.y, 'player');
    player.height=100;
   player.width = 100;
 
   game.input.onDown.add(updateAnchor, this);
-
 
 
 
