@@ -15,6 +15,8 @@ function preload() {
 
 var bg;
 var platform1, platform2;
+var shuriken;
+var fireButton;
 var cursors;
 var player;
 var point;
@@ -24,7 +26,16 @@ var dec = false;
 function create() {
   bg = game.add.tileSprite(0, 0, 1200, 600, 'background');
   _loadComponents();
+  shuriken = game.add.weapon(50,'shuriken');
+  shuriken.width = 5;
+  shuriken.height= 5;
+  shuriken.bulletAngleOffset = 180;
+  shuriken.bulletSpeed = -400;
+  shuriken.fireRate = 100;
+  shuriken.trackSprite(player, 100, 0);
+
   cursors = game.input.keyboard.createCursorKeys();
+  fireButton = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
 }
 
 function initialSplashScreen() {
@@ -39,6 +50,12 @@ function update() {
 
   _moveWithCursos();
 
+  if (fireButton.isDown)
+    {
+        shuriken.fireAngle = 180;
+        shuriken.fire();
+    }
+
 }
 
 function render() {
@@ -51,6 +68,7 @@ function _loadSprites() {
   game.load.image('platform1', 'src/assets/shared/platform-1.png');
   game.load.image('platform2', 'src/assets/shared/platform-1.png');
   game.load.image('player', 'src/assets/shared/player.png');
+  game.load.image('shuriken', 'src/assets/shared/shuriken.png');
 }
 // ##### END LOAD SPRITES
 
