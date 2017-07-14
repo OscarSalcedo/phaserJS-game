@@ -25,16 +25,12 @@ var platform1, platform2;
 function create() {
 
   bg = game.add.tileSprite(0, 0, 1200, 600, 'background');
-  //platform1 = game.add.sprite(0, 0, 'platform1');
 
 
   var platformX = 0;
   var platformY = 550;
   var sprite1 = game.add.sprite(platformX, platformY, 'platform2');
   sprite1.width = 150;
-  //var sprite2 = game.add.sprite(0, 0, 'platform2').alignTo(sprite1, Phaser.RIGHT_CENTER, 16);
-  // var sprite3 = game.add.sprite(0, 0, 'platform2').alignTo(sprite2, Phaser.RIGHT_CENTER, 16);
-  // var sprite4 = game.add.sprite(0, 0, 'platform2').alignTo(sprite3, Phaser.RIGHT_CENTER, 16);
   var platformSpriteX = platformX+sprite1.width;
   for(var i=0; i<10;i++){
     var sprite = game.add.sprite(platformSpriteX, platformY, 'platform2');
@@ -42,7 +38,6 @@ function create() {
     platformSpriteX = platformSpriteX+sprite.width;
   }
 
-  //sprite1.width=150;
 
 
 
