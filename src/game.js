@@ -35,17 +35,18 @@ function update() {
 
   player.body.velocity.x = 0;
   player.body.velocity.y = 0;
+  //game.physics.arcade.collide(sprite1, player);
 
   _moveWithCursos();
 
 }
 
 function render() {
-
 }
 
+
 // ##### LOAD SPRITES
-function _loadSprites(){
+function _loadSprites() {
   game.load.image('background', 'src/assets/shared/background-BG.jpg');
   game.load.image('platform1', 'src/assets/shared/platform-1.png');
   game.load.image('platform2', 'src/assets/shared/platform-1.png');
@@ -66,6 +67,12 @@ function _loadPlayer() {
   game.physics.enable(player, Phaser.Physics.ARCADE);
   player.height = 100;
   player.width = 100;
+
+  game.physics.enable([player], Phaser.Physics.ARCADE);
+  player.body.collideWorldBounds = true;
+  player.body.checkCollision.down = true;
+  player.body.bounce.y = 0.8;
+  player.body.gravity.y = 8000;
 }
 
 function _loadPlatform() {
@@ -97,4 +104,5 @@ function _moveWithCursos() {
     player.body.velocity.y = 300;
   }
 };
+
 // ##### END MOVE PLAYER WITH ARROWS
