@@ -21,7 +21,7 @@ function preload() {
 
 var bg;
 var platform1, platform2;
-
+var cursors;
 var player;
 var point;
 var dec = false;
@@ -34,24 +34,27 @@ function create() {
 
   var platformX = 0;
   var platformY = 550;
-  var sprite1 = game.add.sprite(platformX, platformY, 'platform2');
-  sprite1.width = 150;
-  var platformSpriteX = platformX+sprite1.width;
-  for(var i=0; i<10;i++){
+  var platform = game.add.sprite(platformX, platformY, 'platform2');
+  platform.width = 150;
+  var platformSpriteX = platformX + platform.width;
+  for (var i = 0; i < 10; i++) {
     var sprite = game.add.sprite(platformSpriteX, platformY, 'platform2');
-    sprite.width= 150;
-    platformSpriteX = platformSpriteX+sprite.width;
+    sprite.width = 150;
+    platformSpriteX = platformSpriteX + sprite.width;
   }
 
-   point = new Phaser.Point(800, 170);
 
+
+  /* ##### Start Player
+  */
+  point = new Phaser.Point(50, 480);
   player = game.add.sprite(point.x, point.y, 'player');
-   player.height=100;
+  game.physics.enable(player, Phaser.Physics.ARCADE);
+  player.height = 100;
   player.width = 100;
-
-  game.input.onDown.add(updateAnchor, this);
-
-
+  /* ##### End Player
+  */
+  cursors = game.input.keyboard.createCursorKeys();
 
 
 }
@@ -61,9 +64,29 @@ function initialSplashScreen() {
 }
 
 function update() {
-  // box.rotation += 0.04;
+
+  player.body.velocity.x = 0;
+  player.body.velocity.y = 0;
+
+  _moveWithCursos();
+
 }
 
 function render() {
 
 }
+
+function _moveWithCursos(){
+  if (cursors.left.isDown) {
+    player.body.velocity.x = -300;
+  }
+  else if (cursors.right.isDown) {
+    player.body.velocity.x = 300;
+  }
+  else if (cursors.up.isDown) {
+    player.body.velocity.y = -300;
+  }
+  else if (cursors.down.isDown) {
+    player.body.velocity.y = 300;
+  }
+};
