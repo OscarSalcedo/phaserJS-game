@@ -22,6 +22,11 @@ function preload() {
 var bg;
 var platform1, platform2;
 
+var player;
+var point;
+var dec = false;
+
+
 function create() {
 
   bg = game.add.tileSprite(0, 0, 1200, 600, 'background');
@@ -37,6 +42,14 @@ function create() {
     sprite.width= 150;
     platformSpriteX = platformSpriteX+sprite.width;
   }
+
+   point = new Phaser.Point(800, 170);
+
+  player = game.add.sprite(point.x, point.y, 'player');
+   player.height=100;
+  player.width = 100;
+
+  game.input.onDown.add(updateAnchor, this);
 
 
 
