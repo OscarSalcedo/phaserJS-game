@@ -26,14 +26,6 @@ var dec = false;
 function create() {
   bg = game.add.tileSprite(0, 0, 1200, 600, 'background');
   _loadComponents();
-  shuriken = game.add.weapon(50,'shuriken');
-  shuriken.width = 5;
-  shuriken.height= 5;
-  shuriken.bulletAngleOffset = 180;
-  shuriken.bulletSpeed = -400;
-  shuriken.fireRate = 100;
-  shuriken.trackSprite(player, 100, 0);
-
   cursors = game.input.keyboard.createCursorKeys();
   fireButton = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
 }
@@ -77,6 +69,7 @@ function _loadSprites() {
 function _loadComponents() {
   _loadPlatform();
   _loadPlayer();
+  _loadShuriken();
 }
 
 function _loadPlayer() {
@@ -104,6 +97,14 @@ function _loadPlatform() {
     sprite.width = 150;
     platformSpriteX = platformSpriteX + sprite.width;
   }
+}
+
+function _loadShuriken(){
+  shuriken = game.add.weapon(10,'shuriken');
+  shuriken.bulletAngleOffset = 180;
+  shuriken.bulletSpeed = -300;
+  shuriken.fireRate = 500;
+  shuriken.trackSprite(player, 100, 50);
 }
 // #### END LOAD VISUAL COMPONENTS
 
