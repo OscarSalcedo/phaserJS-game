@@ -8,7 +8,7 @@ import Phaser from 'phaser';
 
 var game = new Phaser.Game(1200, 600, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update });
 var robot, box, woman, player, groupPlatform, platform, coins, plataforma1, plataforma2, plataforma3, roca, tree1;
-var platforms, scoreText, score = 0, laser, mushroom1, mushroom2, jumpButton, cursors;
+var platforms, scoreText, score = 0, laser, mushroom1, mushroom2, jumpButton, cursors, bush1, bush2, bush3, bush4, plataforma4, plataforma5, plataforma6;
 function preload() {
   game.load.spritesheet('robot', 'src/assets/shared/robot.png', 80, 111);
   game.load.image('background', 'src/assets/shared/background-BG.jpg');
@@ -20,13 +20,19 @@ function preload() {
   game.load.image('platform1', 'src/assets/shared/13.png');
   game.load.image('platform2', 'src/assets/shared/14.png');
   game.load.image('platform3', 'src/assets/shared/15.png');
+  game.load.image('platform4', 'src/assets/shared/1.png');
+  game.load.image('platform5', 'src/assets/shared/2.png');
+  game.load.image('platform6', 'src/assets/shared/3.png');
   game.load.image('laser', 'src/assets/shared/laser.png');
   game.load.image('bg', 'src/assets/shared/BG.png');
   game.load.image('roca', 'src/assets/shared/Stone.png');
   game.load.image('tree1', 'src/assets/shared/Tree_1.png');
   game.load.image('mushroom1', 'src/assets/shared/Mushroom_1.png');
   game.load.image('mushroom2', 'src/assets/shared/Mushroom_2.png');
-
+  game.load.image('bush1', 'src/assets/shared/Bush_1.png');
+  game.load.image('bush2', 'src/assets/shared/Bush_2.png');
+  game.load.image('bush3', 'src/assets/shared/Bush_3.png');
+  game.load.image('bush4', 'src/assets/shared/Bush_4.png');
 }
 
 function create() {
@@ -60,8 +66,6 @@ function create() {
   ground2.body.immovable = true;
 
 
-
-
   // var plataforma = platforms.create(280, 250, 'ground');
   // plataforma.body.immovable = true;
 
@@ -73,7 +77,14 @@ function create() {
   plataforma2.body.immovable = true;
   plataforma3.body.immovable = true;
 
+
+
   game.physics.arcade.enable(plataforma1, plataforma2, plataforma3);
+
+
+
+
+
 
   //*** MONEDAS
   coins = game.add.group();
@@ -108,9 +119,11 @@ function create() {
   tree1 = game.add.sprite(600, 508, "tree1");
 
   //** Mushroom
-  mushroom1 = game.add.sprite(690, 512, "mushroom1");
+  mushroom1 = game.add.sprite(750, 512, "mushroom1");
   mushroom2 = game.add.sprite(620, 160, "mushroom2");
 
+  // *** Bush
+  bush1 = game.add.sprite(1200, 488, "bush1");
 
 
 
@@ -122,6 +135,7 @@ function create() {
   robot.body.gravity.y = 300;
   robot.body.collideWorldBounds = true;
 
+  //Moviment de la camara
   game.camera.follow(robot);
 
   //Animació del robot
@@ -163,7 +177,7 @@ function update() {
     robot.body.velocity.x = 300;;
     robot.animations.play("run");
     robot.scale.x = 1;
-  } else if (game.input.keyboard.isDown(Phaser.Keyboard.UP) ) {
+  } else if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
     robot.animations.play("jump");
     robot.body.velocity.y = -300;
   } else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
@@ -179,7 +193,6 @@ function update() {
 function collectCoins(robot, coin) {
 
   coin.kill();
-
   score += 10;
   scoreText.text = 'Puntos: ' + score;
 
