@@ -8,8 +8,8 @@ import Phaser from 'phaser';
 
 var game = new Phaser.Game(1200, 600, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update });
 
-var robot, box, woman, player, groupPlatform, platform, coins, plataforma1, plataforma2, plataforma3, roca, tree1, sea1, sea2, enemy;
-var platforms, scoreText, score = 0, laser, mushroom1, mushroom2, jumpButton, cursors, bush1, bush2, bush3, bush4, plataforma4, plataforma5, plataforma6;
+var robot, box, woman, player, groupPlatform, platform, coins, plataforma1, plataforma2, plataforma3, roca, tree1, sea1, sea2, enemy, fireWeapon;
+var platforms, scoreText, score = 0, laser, mushroom1, mushroom2, jumpButton, cursors, fireButton, bush1, bush2, bush3, bush4, plataforma4, plataforma5, plataforma6;
 
 function preload() {
   _loadSprites();
@@ -30,7 +30,7 @@ function create() {
 
   cursors = game.input.keyboard.createCursorKeys();
 
-  // jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+  fireButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
 }
 
@@ -38,6 +38,7 @@ function update() {
   _checkForCollisions();
   _moveWithCursos();
   _loadMoveEnemy();
+  _throwFireWeapon();
 }
 
 function _loadSprites() {
@@ -67,6 +68,7 @@ function _loadSprites() {
   game.load.image('sea', 'src/assets/shared/17.png');
   game.load.image('sea1', 'src/assets/shared/18.png');
   game.load.spritesheet('enemy', 'src/assets/shared/enemic.png', 152, 450);
+  game.load.spritesheet('fireWeapon', 'src/assets/shared/fireWeapon.png', 95, 300);
 }
 
 function _loadComponents() {
@@ -76,6 +78,7 @@ function _loadComponents() {
   _loadCoins();
   _loadBoxes();
   _loadEnemy();
+  _loadFireWeapon();
 }
 
 function _checkForCollisions() {
@@ -88,6 +91,20 @@ function _checkForCollisions() {
   game.physics.arcade.collide(plataforma3, coins);
   game.physics.arcade.collide(box, coins);
   game.physics.arcade.overlap(robot, coins, collectCoins, null, this);
+}
+
+function _throwFireWeapon() {
+  if (fireButton.isDown) {
+    fireWeapon.fireAngle = 0;
+    fireWeapon.bulletAngleOffSet = 180;
+    fireWeapon.fire();
+    //fireWeapon.animations.play('fire');
+  }
+  // else if (fireButton.isDown) {
+  //   fireWeapon.fireAngle = 180;
+  //   fireWeapon.bulletAngleOffSet = -180;
+  //   fireWeapon.fire();
+  // }
 }
 
 function _moveWithCursos() {
@@ -115,6 +132,16 @@ function _moveWithCursos() {
     robot.body.velocity.y = -300;
   }
 };
+
+function _loadFireWeapon() {
+  fireWeapon = game.add.weapon(5, 'fireWeapon');
+  game.physics.arcade.enable(fireWeapon);
+  fireWeapon.bulletSpeed = 300;
+  fireWeapon.fireRate = 500;
+  fireWeapon.trackSprite(robot, 100, 0);
+
+  fireWeapon.addBulletAnimation('fire', [0, 1, 2, 3, 4], 10, true);
+}
 
 function _loadRobot() {
   //ROBOT
@@ -225,7 +252,7 @@ var limit = false;
 
 function _loadEnemy() {
   // ENEMY
-  enemy = game.add.sprite(900, 418, "enemy");
+  enemy = game.add.sprite(900, 0, "enemy");
   game.physics.arcade.enable(enemy);
 
 
