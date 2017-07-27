@@ -100,16 +100,16 @@ function create() {
   //** BOX
   //platform = game.add.sprite(1000, 538, "platform")
   //game.physics.p2.enable([platform], true);
-  // box = game.add.group();
-  // box.enableBody = true;
+  box = game.add.group();
+  box.enableBody = true;
 
-  // for (var i = 1; i < 10; i++) {
-  //   var b = box.create(game.rnd.between(100, 770), game.rnd.between(0, 570), 'box', game.rnd.between(0, 35));
-  //   b.body.gravity.y = 300;
-  //   b.body.bounce.y = 0.7;
-  //   b.body.collideWorldBounds = true;
-  //   // //game.physics.p2.enable([box], false);
-  // }
+  for (var i = 1; i < 10; i++) {
+    var b = box.create(game.rnd.between(100, 770), game.rnd.between(0, 570), 'box', game.rnd.between(0, 35));
+    b.body.gravity.y = 300;
+    b.body.bounce.y = 0.7;
+    b.body.collideWorldBounds = true;
+    // //game.physics.p2.enable([box], false);
+  }
 
   //*** ROCA */
   roca = game.add.sprite(200, 497, "roca");
@@ -177,15 +177,17 @@ function update() {
     robot.body.velocity.x = 300;;
     robot.animations.play("run");
     robot.scale.x = 1;
-  } else if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
-    robot.animations.play("jump");
-    robot.body.velocity.y = -300;
+    game.input.keyboard.i
   } else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
     robot.body.velocity.y = 300;
     robot.animations.play("run");
   } else {
     robot.play("idle");
     robot.body.velocity.x = 0;
+  }
+  if(game.input.keyboard.isDown(Phaser.Keyboard.UP) && robot.body.touching.down) {
+    robot.animations.play("jump");
+    robot.body.velocity.y = -300;
   }
 }
 
