@@ -7,7 +7,8 @@ import Phaser from 'phaser';
 // import SceneLoader from './common/states/sceneLoader.js';
 
 var game = new Phaser.Game(1200, 600, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update });
-var robot, box, woman, player, groupPlatform, platform, coins, plataforma1, plataforma2, plataforma3, roca, tree1;
+
+var robot, box, woman, player, groupPlatform, platform, coins, plataforma1, plataforma2, plataforma3, roca, tree1, sea1, sea2, enemic;
 var platforms, scoreText, score = 0, laser, mushroom1, mushroom2, jumpButton, cursors, bush1, bush2, bush3, bush4, plataforma4, plataforma5, plataforma6;
 
 function preload() {
@@ -62,6 +63,9 @@ function _loadSprites() {
   game.load.image('bush2', 'src/assets/shared/Bush_2.png');
   game.load.image('bush3', 'src/assets/shared/Bush_3.png');
   game.load.image('bush4', 'src/assets/shared/Bush_4.png');
+  game.load.image('sea', 'src/assets/shared/17.png');
+  game.load.image('sea1', 'src/assets/shared/18.png');
+  game.load.spritesheet('enemic', 'src/assets/shared/enemic.png', 150, 500);
 }
 
 function _loadComponents() {
@@ -70,6 +74,7 @@ function _loadComponents() {
   _loadRobot();
   _loadCoins();
   _loadBoxes();
+  _loadEnemy();
 }
 
 function _checkForCollisions() {
@@ -131,6 +136,7 @@ function _loadPlatforms() {
   var ground = platforms.create(0, game.world.height - 50, 'ground');
   var ground1 = platforms.create(600, game.world.height - 50, 'ground');
   var ground2 = platforms.create(1000, game.world.height - 50, 'ground');
+  var ground3 = platforms.create(2664, game.world.height - 50, 'ground');
 
   ground.body.immovable = true;
   ground1.body.immovable = true;
@@ -194,18 +200,39 @@ function _loadBackgroundElements() {
   game.add.sprite(3000, 600, 'bg');
 
   //*** ROCA */
-  roca = game.add.sprite(200, 497, "roca");
+  roca = game.add.sprite(220, 497, "roca");
 
   //* TREE
 
   tree1 = game.add.sprite(600, 508, "tree1");
 
   //** Mushroom
-  mushroom1 = game.add.sprite(750, 512, "mushroom1");
-  mushroom2 = game.add.sprite(620, 160, "mushroom2");
+  mushroom1 = game.add.sprite(750, 509, "mushroom1");
+  mushroom2 = game.add.sprite(620, 162, "mushroom2");
 
   // *** Bush
   bush1 = game.add.sprite(1200, 488, "bush1");
+
+  //** Sea */
+  sea1 = game.add.sprite(2280, game.world.height - 40, "sea");
+  sea1 = game.add.sprite(2408, game.world.height - 40, "sea");
+  sea1 = game.add.sprite(2536, game.world.height - 40, "sea");
+
+
+}
+function _loadEnemy() {
+  // ENEMIC
+
+  enemic  =  game.add.sprite(900,  418,  "enemic");
+  enemic.width  =  70;
+  enemic.height  =  200;
+  game.physics.arcade.enable(enemic);
+  // enemic.body.bounce.y = 0.2;
+  // enemic.body.gravity.y = 300;
+  // enemic.body.collideWorldBounds = true;
+
+  enemic.animations.add('a', [0,  1,  2,  3,  4,  5,  6,  7],  10,  true);
+  enemic.animations.play("a");
 }
 
 function collectCoins(robot, coin) {
