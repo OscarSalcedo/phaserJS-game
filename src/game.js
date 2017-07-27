@@ -148,7 +148,6 @@ function _loadRobot() {
   robot = game.add.sprite(100, game.world.height - 180, "robot");
   game.physics.arcade.enable(robot);
 
-  robot.body.bounce.y = 0.2;
   robot.body.gravity.y = 300;
   robot.body.collideWorldBounds = true;
 
