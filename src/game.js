@@ -91,8 +91,8 @@ function _checkForCollisions() {
   game.physics.arcade.collide(plataforma3, coins);
   game.physics.arcade.collide(box, coins);
   game.physics.arcade.overlap(robot, coins, collectCoins, null, this);
+  game.physics.arcade.overlap(fireWeapon, enemy, destroyEnemy, null,this);
 }
-
 function _throwFireWeapon() {
   if (fireButton.isDown) {
     fireWeapon.fireAngle = 0;
@@ -135,7 +135,9 @@ function _moveWithCursos() {
 
 function _loadFireWeapon() {
   fireWeapon = game.add.weapon(5, 'fireWeapon');
-  game.physics.arcade.enable(fireWeapon);
+  // game.physics.arcade.enable(fireWeapon);
+  fireWeapon.enableBody =  true;
+  fireWeapon.physicsBodyType = Phaser.Physics.ARCADE;
   fireWeapon.bulletSpeed = 300;
   fireWeapon.fireRate = 500;
   fireWeapon.trackSprite(robot, 100, 0);
@@ -326,4 +328,10 @@ function collectCoins(robot, coin) {
   score += 10;
   scoreText.text = 'Puntos: ' + score;
 
+}
+function destroyEnemy(fireWeapon, enemy){
+  debugger;
+  fireWeapon.kill();
+  enemy.kill();
+  score += 100;
 }
