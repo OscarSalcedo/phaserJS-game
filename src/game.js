@@ -8,7 +8,7 @@ import Phaser from 'phaser';
 
 var game = new Phaser.Game(1200, 600, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update });
 
-var robot, box, woman, player, groupPlatform, platform, coins, plataforma1, plataforma2, plataforma3, roca, tree1, sea1, sea2, enemy, fireWeapon;
+var robot, box, woman, player, groupPlatform, platform, coins, plataforma1, plataforma2, plataforma3, roca, tree1, sea1, sea2, enemy, fireWeapon, dinosaur;
 var platforms, scoreText, score = 0, laser, mushroom1, mushroom2, jumpButton, cursors, fireButton, bush1, bush2, bush3, bush4, plataforma4, plataforma5, plataforma6;
 
 function preload() {
@@ -69,6 +69,7 @@ function _loadSprites() {
   game.load.image('sea1', 'src/assets/shared/18.png');
   game.load.spritesheet('enemy', 'src/assets/shared/enemic.png', 152, 450);
   game.load.spritesheet('fireWeapon', 'src/assets/shared/fireWeapon.png', 95, 300);
+  game.load.spritesheet('dinosaur', 'src/assets/shared/dinosaurio.png', 99.27, 200);
 }
 
 function _loadComponents() {
@@ -252,13 +253,12 @@ var limit = false;
 function _loadEnemy() {
   // ENEMY
   enemy = game.add.sprite(900, 0, "enemy");
-  game.physics.arcade.enable(enemy);
+  dinosaur = game.add.sprite(700, 17, 'dinosaur');
 
+  game.physics.arcade.enable(enemy, dinosaur);
 
   enemy.enableBody = true;
-
-
-
+  dinosaur.enableBody = true;
   enemy.width = 70;
   enemy.height = 200;
 
@@ -269,6 +269,11 @@ function _loadEnemy() {
 
   enemy.animations.add('idle', [0, 1, 2, 3, 4, 5, 6, 7], 30, true);
   enemy.animations.play("idle");
+
+   dinosaur.animations.add('idle', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], 20, true);
+   dinosaur.animations.play("idle");
+
+
   //Moviment
   // var tween = game.add.tween(enemy).to({
   //   x: 500
@@ -294,6 +299,9 @@ function _loadMoveEnemy() {
 
     var tween = game.add.tween(enemy).to({ x: 900 }, 6000, Phaser.Easing.Linear.None, true);
   }
+
+
+
 
 }
 
