@@ -10,6 +10,7 @@ var game = new Phaser.Game(1200, 600, Phaser.CANVAS, 'phaser-example', { preload
 
 var robot, box, woman, player, groupPlatform, platform, coins, plataforma1, plataforma2, plataforma3, roca, tree1, sea1, sea2, enemic;
 var platforms, scoreText, score = 0, laser, mushroom1, mushroom2, jumpButton, cursors, bush1, bush2, bush3, bush4, plataforma4, plataforma5, plataforma6;
+
 function preload() {
   game.load.spritesheet('robot', 'src/assets/shared/robot.png', 80, 111);
   game.load.image('background', 'src/assets/shared/background-BG.jpg');
@@ -103,6 +104,22 @@ function create() {
   //game.physics.p2.enable([platform], true);
   // box = game.add.group();
   // box.enableBody = true;
+  box = game.add.group();
+  box.enableBody = true;
+  var b = box.create(300,440,'box');
+  b.body.checkCollision.up = true;
+  b.body.checkCollision.down = false;
+  b.body.checkCollision.left = false;
+  b.body.checkCollision.right = false;
+  b.body.immovable = true;
+
+  var b2 = box.create(450, 300, 'box');
+  b2.body.checkCollision.up = true;
+  b2.body.checkCollision.down = false;
+  b2.body.checkCollision.left = false;
+  b2.body.checkCollision.right = false;
+  b2.body.immovable = true;
+
 
   // for (var i = 1; i < 10; i++) {
   //   var b = box.create(game.rnd.between(100, 770), game.rnd.between(0, 570), 'box', game.rnd.between(0, 35));
@@ -208,6 +225,7 @@ function update() {
     robot.animations.play("jump");
     robot.body.velocity.y = -300;
   }
+
 }
 
 
