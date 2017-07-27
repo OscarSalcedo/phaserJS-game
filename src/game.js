@@ -29,16 +29,6 @@ function create() {
 
   cursors = game.input.keyboard.createCursorKeys();
 
-  //*** ENABLE P2 PHYSICS
-  //game.physics.startSystem(Phaser.Physics.P2JS);
-  //game.physics.p2.setImpactEvents(true);
-  //game.physics.p2.defaultRestitution = 0.8;
-  //game.physics.p2.gravity.y = 800;
-  //game.physics.p2.restitution = 0.8; // Que l'objecte reboti
-
-  //game.physics.p2.enable([robot], false);//Habilitar les fisiques del robot
-  //robot.body.setRectangle(80, 110); //Per fer més gran la fisica del objecte
-
   // jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
 }
