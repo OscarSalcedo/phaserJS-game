@@ -8,7 +8,7 @@ import Phaser from 'phaser';
 
 var game = new Phaser.Game(1200, 600, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update });
 
-var robot, box, woman, player, groupPlatform, platform, coins, plataforma1, plataforma2, plataforma3, roca, tree1, sea1, sea2, enemic, fireWeapon;
+var robot, box, woman, player, groupPlatform, platform, coins, plataforma1, plataforma2, plataforma3, roca, tree1, sea1, sea2, enemy, fireWeapon;
 var platforms, scoreText, score = 0, laser, mushroom1, mushroom2, jumpButton, cursors, fireButton, bush1, bush2, bush3, bush4, plataforma4, plataforma5, plataforma6;
 
 function preload() {
@@ -37,6 +37,7 @@ function create() {
 function update() {
   _checkForCollisions();
   _moveWithCursos();
+  _loadMoveEnemy();
   _throwFireWeapon();
 }
 
@@ -66,7 +67,7 @@ function _loadSprites() {
   game.load.image('bush4', 'src/assets/shared/Bush_4.png');
   game.load.image('sea', 'src/assets/shared/17.png');
   game.load.image('sea1', 'src/assets/shared/18.png');
-  game.load.spritesheet('enemic', 'src/assets/shared/enemic.png', 150, 500);
+  game.load.spritesheet('enemy', 'src/assets/shared/enemic.png', 152, 450);
   game.load.spritesheet('fireWeapon', 'src/assets/shared/fireWeapon.png', 95, 300);
 }
 
@@ -231,7 +232,6 @@ function _loadBackgroundElements() {
   roca = game.add.sprite(220, 497, "roca");
 
   //* TREE
-
   tree1 = game.add.sprite(600, 508, "tree1");
 
   //** Mushroom
@@ -248,20 +248,78 @@ function _loadBackgroundElements() {
 
 
 }
+var limit = false;
+
 function _loadEnemy() {
-  // ENEMIC
+  // ENEMY
+  enemy = game.add.sprite(900, 0, "enemy");
+  game.physics.arcade.enable(enemy);
 
-  enemic = game.add.sprite(900, 418, "enemic");
-  enemic.width = 70;
-  enemic.height = 200;
-  game.physics.arcade.enable(enemic);
-  // enemic.body.bounce.y = 0.2;
-  // enemic.body.gravity.y = 300;
-  // enemic.body.collideWorldBounds = true;
 
-  enemic.animations.add('a', [0, 1, 2, 3, 4, 5, 6, 7], 10, true);
-  enemic.animations.play("a");
+  enemy.enableBody = true;
+
+
+
+  enemy.width = 70;
+  enemy.height = 200;
+
+  enemy.body.bounce.y = 0.5;
+  enemy.body.gravity.y = 300;
+  enemy.body.collideWorldBounds = true;
+
+
+  enemy.animations.add('idle', [0, 1, 2, 3, 4, 5, 6, 7], 30, true);
+  enemy.animations.play("idle");
+  //Moviment
+  // var tween = game.add.tween(enemy).to({
+  //   x: 500
+  // }, 6000, Phaser.Easing.Linear.None, true, 0, 800, true);
+  // tween.
+
+  _loadMoveEnemy();
+
+  enemy.x = 200;
+  enemy.y = 502;
+
 }
+
+function _loadMoveEnemy() {
+  if (enemy.x === 900) {
+    enemy.scale.x = 0.5;
+    enemy.width = 70;
+
+    var tween = game.add.tween(enemy).to({ x: 500 }, 6000, Phaser.Easing.Linear.None, true);
+  } else if (enemy.x === 500) {
+
+    enemy.scale.x = -0.5;
+
+    var tween = game.add.tween(enemy).to({ x: 900 }, 6000, Phaser.Easing.Linear.None, true);
+  }
+
+}
+
+
+
+/*
+function aliensCreation() {
+
+for (var y = 0; y < 3; y++) {
+for (var x = 0; x < 4; x++) {
+var alien = aliens.create(x * 48, y * 50, 'alienEnemy');
+alien.anchor.setTo(0.5, 0.5);
+alien.animations.add('fly', [0, 1, 2, 3], 20, true);
+alien.play('fly');
+alien.body.moves = false;
+}
+}
+
+aliens.x = 100;
+aliens.y = 50;
+
+var tween = game.add.tween(aliens).to({ x: 200 }, 2000, Phaser.Easing.Linear.None, true, 0, 1000, true);
+
+//tween.onLoop.add(descend, this);
+} */
 
 function collectCoins(robot, coin) {
 
