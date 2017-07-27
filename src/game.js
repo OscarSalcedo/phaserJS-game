@@ -11,6 +11,44 @@ var robot, box, woman, player, groupPlatform, platform, coins, plataforma1, plat
 var platforms, scoreText, score = 0, laser, mushroom1, mushroom2, jumpButton, cursors, bush1, bush2, bush3, bush4, plataforma4, plataforma5, plataforma6;
 
 function preload() {
+  _loadSprites();
+}
+
+function create() {
+
+  game.world.setBounds(0, 0, 3000, 600);
+  //*** ENABLE PHYSICS
+  game.physics.startSystem(Phaser.Physics.ARCADE);
+
+  _loadComponents();
+  //Moviment de la camara
+  game.camera.follow(robot);
+
+  //*** TEXT */
+  scoreText = game.add.text(16, 16, 'Puntos: 0', { fontSize: '32px', fill: '#000' });
+
+  cursors = game.input.keyboard.createCursorKeys();
+
+  //*** ENABLE P2 PHYSICS
+  //game.physics.startSystem(Phaser.Physics.P2JS);
+  //game.physics.p2.setImpactEvents(true);
+  //game.physics.p2.defaultRestitution = 0.8;
+  //game.physics.p2.gravity.y = 800;
+  //game.physics.p2.restitution = 0.8; // Que l'objecte reboti
+
+  //game.physics.p2.enable([robot], false);//Habilitar les fisiques del robot
+  //robot.body.setRectangle(80, 110); //Per fer més gran la fisica del objecte
+
+  // jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+
+}
+
+function update() {
+  _checkForCollisions();
+  _moveWithCursos();
+}
+
+function _loadSprites() {
   game.load.spritesheet('robot', 'src/assets/shared/robot.png', 80, 111);
   game.load.image('background', 'src/assets/shared/background-BG.jpg');
   game.load.image('box', 'src/assets/shared/box.png');
@@ -36,24 +74,66 @@ function preload() {
   game.load.image('bush4', 'src/assets/shared/Bush_4.png');
 }
 
-function create() {
+function _loadComponents() {
+  _loadBackgroundElements();
+  _loadPlatforms();
+  _loadRobot();
+  _loadCoins();
+  _loadBoxes();
+}
 
-  game.world.setBounds(0, 0, 3000, 600);
+function _checkForCollisions() {
+  game.physics.arcade.collide(robot, platforms);
+  game.physics.arcade.collide(coins, platforms);
+  game.physics.arcade.collide(box, platforms);
+  game.physics.arcade.collide(box, robot);
+  game.physics.arcade.collide(plataforma1, coins);
+  game.physics.arcade.collide(plataforma2, coins);
+  game.physics.arcade.collide(plataforma3, coins);
+  game.physics.arcade.overlap(robot, coins, collectCoins, null, this);
+}
 
-  //*** BACKGROUND
-  var bg = game.add.tileSprite(0, 0, 3000, 600, 'bg');
-  game.add.sprite(3000, 600, 'bg');
+function _moveWithCursos() {
+  if (cursors.left.isDown) {
+    robot.body.velocity.x = -300;
+    robot.animations.play("run");
+    robot.scale.x = -1;
+  }
+  else if (cursors.right.isDown) {
+    robot.body.velocity.x = 300;;
+    robot.animations.play("run");
+    robot.scale.x = 1;
+  }
+  else if (cursors.down.isDown) {
+    robot.body.velocity.y = 300;
+    robot.animations.play("run");
+  }
+  else {
+    robot.play("idle");
+    robot.body.velocity.x = 0;
+  }
 
-  //*** ENABLE P2 PHYSICS
-  //game.physics.startSystem(Phaser.Physics.P2JS);
-  //game.physics.p2.setImpactEvents(true);
-  //game.physics.p2.defaultRestitution = 0.8;
-  //game.physics.p2.gravity.y = 800;
-  //game.physics.p2.restitution = 0.8; // Que l'objecte reboti
+  if (cursors.up.isDown && robot.body.touching.down) {
+    robot.animations.play("jump");
+    robot.body.velocity.y = -300;
+  }
+};
 
-  //*** ENABLE PHYSICS
-  game.physics.startSystem(Phaser.Physics.ARCADE);
+function _loadRobot() {
+  //ROBOT
+  robot = game.add.sprite(100, game.world.height - 180, "robot");
+  game.physics.arcade.enable(robot);
 
+  robot.body.bounce.y = 0.2;
+  robot.body.gravity.y = 300;
+  robot.body.collideWorldBounds = true;
+
+  //Animació del robot
+  robot.animations.add('idle', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 12, true);
+  robot.animations.add('run', [10, 11, 12, 13, 14, 15, 16, 17], 17, true);
+  robot.animations.add('jump', [18, 19, 20, 21, 22, 23, 24, 25, 26, 27], 10, true);
+}
+function _loadPlatforms() {
   //*** PLATAFORMAS */
   platforms = game.add.group();
   platforms.enableBody = true;
@@ -66,10 +146,6 @@ function create() {
   ground1.body.immovable = true;
   ground2.body.immovable = true;
 
-
-  // var plataforma = platforms.create(280, 250, 'ground');
-  // plataforma.body.immovable = true;
-
   plataforma1 = platforms.create(555, 200, "platform1");
   plataforma2 = platforms.create(680, 200, "platform2");
   plataforma3 = platforms.create(800, 200, "platform3");
@@ -78,15 +154,10 @@ function create() {
   plataforma2.body.immovable = true;
   plataforma3.body.immovable = true;
 
-
-
   game.physics.arcade.enable(plataforma1, plataforma2, plataforma3);
+}
 
-
-
-
-
-
+function _loadCoins() {
   //*** MONEDAS
   coins = game.add.group();
   coins.enableBody = true;
@@ -98,12 +169,13 @@ function create() {
     coin.animations.add('coinsStart', [0, 1, 2, 3], 8, true);
     coin.animations.play("coinsStart");
   }
+}
+
+function _loadBoxes() {
   //** BOX
-  //platform = game.add.sprite(1000, 538, "platform")
-  //game.physics.p2.enable([platform], true);
   box = game.add.group();
   box.enableBody = true;
-  var b = box.create(300,440,'box');
+  var b = box.create(300, 440, 'box');
   b.body.checkCollision.up = true;
   b.body.checkCollision.down = false;
   b.body.checkCollision.left = false;
@@ -117,7 +189,7 @@ function create() {
   b2.body.checkCollision.right = false;
   b2.body.immovable = true;
 
-
+  //Random boxes
   // for (var i = 1; i < 10; i++) {
   //   var b = box.create(game.rnd.between(100, 770), game.rnd.between(0, 570), 'box', game.rnd.between(0, 35));
   //   b.body.gravity.y = 300;
@@ -125,6 +197,11 @@ function create() {
   //   b.body.collideWorldBounds = true;
   //   // //game.physics.p2.enable([box], false);
   // }
+}
+
+function _loadBackgroundElements() {
+  var bg = game.add.tileSprite(0, 0, 3000, 600, 'bg');
+  game.add.sprite(3000, 600, 'bg');
 
   //*** ROCA */
   roca = game.add.sprite(200, 497, "roca");
@@ -139,74 +216,7 @@ function create() {
 
   // *** Bush
   bush1 = game.add.sprite(1200, 488, "bush1");
-
-
-
-  //ROBOT
-  robot = game.add.sprite(100, game.world.height - 180, "robot");
-  game.physics.arcade.enable(robot);
-
-  robot.body.bounce.y = 0.2;
-  robot.body.gravity.y = 300;
-  robot.body.collideWorldBounds = true;
-
-  //Moviment de la camara
-  game.camera.follow(robot);
-
-  //Animació del robot
-  robot.animations.add('idle', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 12, true);
-  robot.animations.add('run', [10, 11, 12, 13, 14, 15, 16, 17], 17, true);
-  robot.animations.add('jump', [18, 19, 20, 21, 22, 23, 24, 25, 26, 27], 10, true);
-
-
-  //game.physics.p2.enable([robot], false);//Habilitar les fisiques del robot
-  //robot.body.setRectangle(80, 110); //Per fer més gran la fisica del objecte
-
-  //*** TEXT */
-  scoreText = game.add.text(16, 16, 'Puntos: 0', { fontSize: '32px', fill: '#000' });
-
-
-  // cursors = game.input.keyboard.createCursorKeys();
-  // jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-
-
-
-
 }
-
-function update() {
-  game.physics.arcade.collide(robot, platforms);
-  game.physics.arcade.collide(coins, platforms);
-  game.physics.arcade.collide(box, platforms);
-  game.physics.arcade.collide(box, robot);
-  game.physics.arcade.collide(plataforma1, coins);
-  game.physics.arcade.collide(plataforma2, coins);
-  game.physics.arcade.collide(plataforma3, coins);
-  game.physics.arcade.overlap(robot, coins, collectCoins, null, this);
-
-  if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
-    robot.body.velocity.x = -300;
-    robot.animations.play("run");
-    robot.scale.x = -1;
-  } else if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
-    robot.body.velocity.x = 300;;
-    robot.animations.play("run");
-    robot.scale.x = 1;
-    game.input.keyboard.i
-  } else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
-    robot.body.velocity.y = 300;
-    robot.animations.play("run");
-  } else {
-    robot.play("idle");
-    robot.body.velocity.x = 0;
-  }
-  if (game.input.keyboard.isDown(Phaser.Keyboard.UP) && robot.body.touching.down) {
-    robot.animations.play("jump");
-    robot.body.velocity.y = -300;
-  }
-
-}
-
 
 function collectCoins(robot, coin) {
 
