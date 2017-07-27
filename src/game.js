@@ -85,6 +85,7 @@ function _checkForCollisions() {
   game.physics.arcade.collide(plataforma1, coins);
   game.physics.arcade.collide(plataforma2, coins);
   game.physics.arcade.collide(plataforma3, coins);
+  game.physics.arcade.collide(box, coins);
   game.physics.arcade.overlap(robot, coins, collectCoins, null, this);
 }
 
