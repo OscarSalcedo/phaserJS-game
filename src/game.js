@@ -10,7 +10,7 @@ var game = new Phaser.Game(1200, 600, Phaser.CANVAS, 'phaser-example', { preload
 
 var robot, box, woman, player, groupPlatform, platform, coins, plataforma1, plataforma2, plataforma3, roca, tree1, tree2, tree3, sea1, sea2, enemy, fireWeapon, dinosaur, mainTheme, coinsAudio, fireShot;
 var platforms, scoreText, score = 0, laser, mushroom1, mushroom2, jumpButton, cursors, fireButton, bush1, bush2, bush3, bush4, plataforma4, plataforma5, plataforma6;
-var explosions, monstruo,sign2;
+var explosions, plant, sign2, deadRobot;
 
 function preload() {
   _loadSprites();
@@ -80,26 +80,30 @@ function _loadSprites() {
   game.load.spritesheet('fireWeapon', 'src/assets/shared/fireWeapon.png', 95, 300);
   game.load.spritesheet('dinosaur', 'src/assets/shared/dinosaurio.png', 99.27, 200);
   game.load.spritesheet('explosion', 'src/assets/shared/explosion.png', 95, 96);
-  game.load.spritesheet('monstruo', 'src/assets/shared/monstruo.png', 152, 280);
+  game.load.spritesheet('plant', 'src/assets/shared/plant.png', 152, 280);
+  game.load.spritesheet('deadRobot', 'src/assets/shared/deadRobot.png', 120, 300);
 
 }
 
-function _loadAudios(){
-  game.load.audio('theme', 'src/assets/audio/mario_theme_song_acapella.mp3');
-  game.load.audio('fireShot','src/assets/audio/catapultaFuego.mp3');
+function _loadAudios() {
+  // game.load.audio('theme', 'src/assets/audio/mario_theme_song_acapella.mp3');
+  // game.load.audio('fireShot','src/assets/audio/catapultaFuego.mp3');
   //game.load.audio('fireShot' ,'src/assets/audio/hadouken.mp3');
-  game.load.audio('coinsAudio', 'src/assets/audio/coinMario.mp3');
+  // game.load.audio('coinsAudio', 'src/assets/audio/coinMario.mp3');
 }
 
 function _loadComponents() {
   _loadBackgroundElements();
   _loadEnemy();
+  _loadDinosaur();
+  _loadPlant();
   _loadPlatforms();
   _loadRobot();
   _loadCoins();
   _loadBoxes();
   _loadFireWeapon();
   _loadExplosion();
+ // _loadDeadRobot();
 }
 
 function _checkForCollisions() {
@@ -113,10 +117,11 @@ function _checkForCollisions() {
   game.physics.arcade.collide(box, coins);
   game.physics.arcade.overlap(robot, coins, collectCoins, null, this);
   game.physics.arcade.overlap(fireWeapon.bullets, enemy, destroyEnemy, null, this);
-  //  game.physics.arcade.overlap( dinosaur, fireWeapon.bullets,destroyDinosaur, null, this);
-
-
+  game.physics.arcade.overlap(dinosaur, fireWeapon.bullets, destroyDinosaur, null, this);
+  game.physics.arcade.overlap(plant, fireWeapon.bullets, destroyPlant, null, this);
+  //game.physics.arcade.overlap(robot, enemy, destroyPlayer, null, this);
 }
+
 function _throwFireWeapon() {
   if (fireButton.isDown) {
     fireWeapon.fireAngle = 0;
@@ -163,7 +168,7 @@ function _loadFireWeapon() {
   fireWeapon = game.add.weapon(5, 'fireWeapon');
   // game.physics.arcade.enable(fireWeapon);
   fireWeapon.enableBody = true;
-  //fireWeapon.physicsBodyType = Phaser.Physics.ARCADE;
+  fireWeapon.physicsBodyType = Phaser.Physics.ARCADE;
   fireWeapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS;
   fireWeapon.bulletSpeed = 300;
   fireWeapon.fireRate = 500;
@@ -182,12 +187,14 @@ function _loadRobot() {
 
   robot.body.gravity.y = 300;
   robot.body.collideWorldBounds = true;
-  robot.body.checkCollision = true;
+ // robot.body.checkCollision = true;
 
   //Animació del robot
   robot.animations.add('idle', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 12, true);
   robot.animations.add('run', [10, 11, 12, 13, 14, 15, 16, 17], 17, true);
   robot.animations.add('jump', [18, 19, 20, 21, 22, 23, 24, 25, 26, 27], 10, true);
+  robot.animations.add('dead', [0, 1, 2,3,4,5,6,7,8,9], 10, false);
+
 }
 function _loadPlatforms() {
   //*** PLATAFORMAS */
@@ -220,7 +227,7 @@ function _loadCoins() {
   coins = game.add.group();
   coins.enableBody = true;
 
-  for (var i = 0; i < 12; i++) {
+  for (var i = 4; i < 12; i++) {
     var coin = coins.create(i * 70, 0, 'coins');
     coin.body.gravity.y = 300;
     coin.body.bounce.y = 0.7 + Math.random() * 0.2;
@@ -235,17 +242,17 @@ function _loadBoxes() {
   box = game.add.group();
   box.enableBody = true;
   var b = box.create(300, 440, 'box');
-  b.body.checkCollision.up = true;
-  b.body.checkCollision.down = true;
-  b.body.checkCollision.left = true;
-  b.body.checkCollision.right = true;
+ // b.body.checkCollision.up = true;
+  //b.body.checkCollision.down = true;
+  //b.body.checkCollision.left = true;
+ // b.body.checkCollision.right = true;
   b.body.immovable = true;
 
   var b2 = box.create(450, 300, 'box');
   b2.body.checkCollision.up = true;
-  b2.body.checkCollision.down = true;
-  b2.body.checkCollision.left = true;
-  b2.body.checkCollision.right = true;
+ // b2.body.checkCollision.down = true;
+ // b2.body.checkCollision.left = true;
+ // b2.body.checkCollision.right = true;
   b2.body.immovable = true;
 
   //Random boxes
@@ -281,6 +288,7 @@ function _loadBackgroundElements() {
 
   // *** Bush
   bush1 = game.add.sprite(1200, 488, "bush1");
+  bush3 = game.add.sprite(1670, 510, "bush3");
 
   //* Sign
 
@@ -301,41 +309,49 @@ function _loadExplosion() {
 
 
 
-function _loadEnemy() {
-  // ENEMY
-  enemy = game.add.sprite(900, 0, "enemy");
-  dinosaur = game.add.sprite(700, 17, 'dinosaur');
-  monstruo = game.add.sprite(2320, 410, "monstruo");
+//** LOAD ENEMY
 
-  game.physics.arcade.enable(enemy, dinosaur, monstruo);
+function _loadEnemy() {
+
+  enemy = game.add.sprite(900, 0, "enemy");
+
+  game.physics.arcade.enable(enemy);
 
   enemy.enableBody = true;
-  dinosaur.enableBody = true;
   enemy.width = 70;
   enemy.height = 200;
-  monstruo.width = 90;
-  monstruo.height = 160;
 
   enemy.body.bounce.y = 0.5;
   enemy.body.gravity.y = 300;
   enemy.body.collideWorldBounds = true;
 
 
-
   enemy.animations.add('idle', [0, 1, 2, 3, 4, 5, 6, 7], 35, true);
   enemy.animations.play("idle");
-
-  dinosaur.animations.add('idle', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], 20, true);
-  dinosaur.animations.play("idle");
-
-  monstruo.animations.add('idle', [0, 1], 5, true);
-  monstruo.animations.play("idle");
 
   _loadMoveEnemy();
 
   enemy.x = 200;
   enemy.y = 502;
+}
+function _loadPlant() {
+  plant = game.add.sprite(2320, 410, "plant");
+  game.physics.arcade.enable(plant);
 
+  plant.width = 90;
+  plant.height = 160;
+
+  plant.animations.add('idle', [0, 1], 5, true);
+  plant.animations.play("idle");
+}
+
+function _loadDinosaur() {
+  dinosaur = game.add.sprite(700, 17, 'dinosaur');
+  game.physics.arcade.enable(dinosaur);
+
+  dinosaur.enableBody = true;
+  dinosaur.animations.add('idle', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], 20, true);
+  dinosaur.animations.play("idle");
 }
 //Moviments
 function _loadMoveEnemy() {
@@ -347,10 +363,8 @@ function _loadMoveEnemy() {
   } else if (enemy.x === 500) {
 
     enemy.scale.x = -0.5;
-
     var tween = game.add.tween(enemy).to({ x: 900 }, 6000, Phaser.Easing.Linear.None, true);
   }
-
 }
 
 function collectCoins(robot, coin) {
@@ -370,18 +384,38 @@ function destroyEnemy(fireWeapon, enemy) {
   explosionAnimation.reset(enemy.x + (enemy.body.width / 2), enemy.y + 70);
   explosionAnimation.play('explosion', 30, false, true);
 
-  score += 100;
+  // score += 100;
 }
 
-// function destroyDinosaur(dinosaur, fireWeapon) {
-//   fireWeapon.kill();
-//   dinosaur.kill();
+function destroyDinosaur(dinosaur, fireWeapon) {
+  fireWeapon.kill();
+  dinosaur.kill();
 
-//   //Animació explosió
-//   var explosionAnimation = explosions.getFirstExists(false);
-//   explosionAnimation.reset(dinosaur.x + (dinosaur.body.width / 2), enemy.y + 70);
-//   explosionAnimation.play('explosion', 30, false, true);
+  //Animació explosió
+  var explosionAnimation = explosions.getFirstExists(false);
+  explosionAnimation.reset(dinosaur.x + 40, dinosaur.y + 130);
+  explosionAnimation.play('explosion', 30, false, true);
+}
 
+function destroyPlant(plant, fireWeapon) {
+  fireWeapon.kill();
+  plant.kill();
+
+  //Animació explosió
+  var explosionAnimation = explosions.getFirstExists(false);
+  explosionAnimation.reset(plant.x + 50, plant.y + 120);
+  explosionAnimation.play('explosion', 30, false, true);
+}
+
+// function destroyPlayer(robot, enemy) {
+//   robot.kill();
+
+//   // _loadDeadRobot();
 // }
 
 
+// function _loadDeadRobot() {
+//   deadRobot = game.add.sprite(robot.body.x, robot.body.y -90, "deadRobot");
+//   game.physics.arcade.enable(deadRobot);
+//   deadRobot.animations.play("dead");
+// }
