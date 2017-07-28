@@ -19,7 +19,7 @@ function preload() {
 
 function create() {
 
-  game.world.setBounds(0, 0, 3000, 600);
+  game.world.setBounds(0, 0, 6000, 600);
   //*** ENABLE PHYSICS
   game.physics.startSystem(Phaser.Physics.ARCADE);
   //Sound
@@ -103,7 +103,7 @@ function _loadComponents() {
   _loadBoxes();
   _loadFireWeapon();
   _loadExplosion();
- // _loadDeadRobot();
+  // _loadDeadRobot();
 }
 
 function _checkForCollisions() {
@@ -124,7 +124,7 @@ function _checkForCollisions() {
 
 function _throwFireWeapon() {
 
-  if (fireButton.isDown && robot.viewDirection==='right') {
+  if (fireButton.isDown && robot.viewDirection === 'right') {
     fireWeapon.trackSprite(robot, 100, 0);
     fireWeapon.fireAngle = 0;
     fireWeapon.bulletAngleOffSet = 180;
@@ -133,7 +133,7 @@ function _throwFireWeapon() {
     fireShot.volume = 1;
     //fireWeapon.animations.play('fire');
   }
-  else if (fireButton.isDown && robot.viewDirection==='left') {
+  else if (fireButton.isDown && robot.viewDirection === 'left') {
     fireWeapon.trackSprite(robot, -50, 80);
     fireWeapon.fireAngle = 180;
     fireWeapon.bulletAngleOffSet = -180;
@@ -193,13 +193,13 @@ function _loadRobot() {
 
   robot.body.gravity.y = 300;
   robot.body.collideWorldBounds = true;
- // robot.body.checkCollision = true;
+  // robot.body.checkCollision = true;
 
   //Animació del robot
   robot.animations.add('idle', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 12, true);
   robot.animations.add('run', [10, 11, 12, 13, 14, 15, 16, 17], 17, true);
   robot.animations.add('jump', [18, 19, 20, 21, 22, 23, 24, 25, 26, 27], 10, true);
-  robot.animations.add('dead', [0, 1, 2,3,4,5,6,7,8,9], 10, false);
+  robot.animations.add('dead', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 10, false);
 
 }
 function _loadPlatforms() {
@@ -219,12 +219,19 @@ function _loadPlatforms() {
 
   plataforma1 = platforms.create(555, 200, "platform1");
   plataforma2 = platforms.create(680, 200, "platform2");
-  plataforma3 = platforms.create(800, 200, "platform3");
+  plataforma3 = platforms.create(808, 200, "platform3");
 
   plataforma1.body.immovable = true;
   plataforma2.body.immovable = true;
   plataforma3.body.immovable = true;
 
+  plataforma1 = platforms.create(2000, 350, "platform1");
+  //plataforma2 = platforms.create(680, 400, "platform2");
+  plataforma3 = platforms.create(2125, 350, "platform3");
+
+  plataforma1.body.immovable = true;
+  plataforma2.body.immovable = true;
+  plataforma3.body.immovable = true;
   game.physics.arcade.enable(plataforma1, plataforma2, plataforma3);
 }
 
@@ -240,6 +247,13 @@ function _loadCoins() {
     coin.animations.add('coinsStart', [0, 1, 2, 3], 8, true);
     coin.animations.play("coinsStart");
   }
+
+  for (var i = 2; i < 10; i++) {
+    var coin = coins.create(i * 1000, 0, 'coins');
+    coin.body.gravity.y = 300;
+    coin.animations.add('coinsStart', [0, 1, 2, 3], 8, true);
+    coin.animations.play("coinsStart");
+  }
   coinsAudio = game.add.audio('coinsAudio');
 }
 
@@ -248,18 +262,22 @@ function _loadBoxes() {
   box = game.add.group();
   box.enableBody = true;
   var b = box.create(300, 440, 'box');
- // b.body.checkCollision.up = true;
+  // b.body.checkCollision.up = true;
   //b.body.checkCollision.down = true;
   //b.body.checkCollision.left = true;
- // b.body.checkCollision.right = true;
+  // b.body.checkCollision.right = true;
   b.body.immovable = true;
 
   var b2 = box.create(450, 300, 'box');
   b2.body.checkCollision.up = true;
- // b2.body.checkCollision.down = true;
- // b2.body.checkCollision.left = true;
- // b2.body.checkCollision.right = true;
+  // b2.body.checkCollision.down = true;
+  // b2.body.checkCollision.left = true;
+  // b2.body.checkCollision.right = true;
   b2.body.immovable = true;
+
+  var b3 = box.create(1900, 475, 'box');
+  // b3.body.gravity.y = 200;
+  b3.body.immovable = true;
 
   //Random boxes
   // for (var i = 1; i < 10; i++) {
@@ -272,7 +290,7 @@ function _loadBoxes() {
 }
 
 function _loadBackgroundElements() {
-  var bg = game.add.tileSprite(0, 0, 3000, 600, 'bg');
+  var bg = game.add.tileSprite(0, 0, 6000, 600, 'bg');
   game.add.sprite(3000, 600, 'bg');
 
   //*** ROCA */
