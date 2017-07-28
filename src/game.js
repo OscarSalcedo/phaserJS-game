@@ -123,7 +123,9 @@ function _checkForCollisions() {
 }
 
 function _throwFireWeapon() {
-  if (fireButton.isDown) {
+
+  if (fireButton.isDown && robot.viewDirection==='right') {
+    fireWeapon.trackSprite(robot, 100, 0);
     fireWeapon.fireAngle = 0;
     fireWeapon.bulletAngleOffSet = 180;
     fireWeapon.fire();
@@ -131,11 +133,14 @@ function _throwFireWeapon() {
     fireShot.volume = 1;
     //fireWeapon.animations.play('fire');
   }
-  // else if (fireButton.isDown) {
-  //   fireWeapon.fireAngle = 180;
-  //   fireWeapon.bulletAngleOffSet = -180;
-  //   fireWeapon.fire();
-  // }
+  else if (fireButton.isDown && robot.viewDirection==='left') {
+    fireWeapon.trackSprite(robot, -50, 80);
+    fireWeapon.fireAngle = 180;
+    fireWeapon.bulletAngleOffSet = -180;
+    fireWeapon.fire();
+    fireShot.play()
+    fireShot.volume = 1;
+  }
 }
 
 function _moveWithCursos() {
@@ -143,11 +148,13 @@ function _moveWithCursos() {
     robot.body.velocity.x = -300;
     robot.animations.play("run");
     robot.scale.x = -1;
+    robot.viewDirection = 'left';
   }
   else if (cursors.right.isDown) {
     robot.body.velocity.x = 300;;
     robot.animations.play("run");
     robot.scale.x = 1;
+    robot.viewDirection = 'right';
   }
   else if (cursors.down.isDown) {
     robot.body.velocity.y = 300;
@@ -172,7 +179,6 @@ function _loadFireWeapon() {
   fireWeapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS;
   fireWeapon.bulletSpeed = 300;
   fireWeapon.fireRate = 500;
-  fireWeapon.trackSprite(robot, 100, 0);
 
   fireWeapon.addBulletAnimation('fire', [0, 1, 2, 3, 4], 10, true);
   fireShot = game.add.audio('fireShot');
