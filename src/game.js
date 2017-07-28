@@ -8,11 +8,12 @@ import Phaser from 'phaser';
 
 var game = new Phaser.Game(1200, 600, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update });
 
-var robot, box, woman, player, groupPlatform, platform, coins, plataforma1, plataforma2, plataforma3, roca, tree1, sea1, sea2, enemy, fireWeapon, dinosaur;
+var robot, box, woman, player, groupPlatform, platform, coins, plataforma1, plataforma2, plataforma3, roca, tree1, sea1, sea2, enemy, fireWeapon, dinosaur, mainTheme, coinsAudio, fireShot;
 var platforms, scoreText, score = 0, laser, mushroom1, mushroom2, jumpButton, cursors, fireButton, bush1, bush2, bush3, bush4, plataforma4, plataforma5, plataforma6;
 
 function preload() {
   _loadSprites();
+  _loadAudios();
 }
 
 function create() {
@@ -20,6 +21,10 @@ function create() {
   game.world.setBounds(0, 0, 3000, 600);
   //*** ENABLE PHYSICS
   game.physics.startSystem(Phaser.Physics.ARCADE);
+  //Sound
+  mainTheme = game.add.audio('theme');
+  mainTheme.play();
+  mainTheme.volume = 0.2;
 
   _loadComponents();
   //Moviment de la camara
@@ -72,6 +77,13 @@ function _loadSprites() {
   game.load.spritesheet('dinosaur', 'src/assets/shared/dinosaurio.png', 99.27, 200);
 }
 
+function _loadAudios(){
+  game.load.audio('theme', 'src/assets/audio/mario_theme_song_acapella.mp3');
+  game.load.audio('fireShot','src/assets/audio/catapultaFuego.mp3');
+  //game.load.audio('fireShot' ,'src/assets/audio/hadouken.mp3');
+  game.load.audio('coinsAudio', 'src/assets/audio/coinMario.mp3');
+}
+
 function _loadComponents() {
   _loadBackgroundElements();
   _loadPlatforms();
@@ -99,6 +111,8 @@ function _throwFireWeapon() {
     fireWeapon.fireAngle = 0;
     fireWeapon.bulletAngleOffSet = 180;
     fireWeapon.fire();
+    fireShot.play()
+    fireShot.volume = 1;
     //fireWeapon.animations.play('fire');
   }
   // else if (fireButton.isDown) {
@@ -142,6 +156,8 @@ function _loadFireWeapon() {
   fireWeapon.trackSprite(robot, 100, 0);
 
   fireWeapon.addBulletAnimation('fire', [0, 1, 2, 3, 4], 10, true);
+  fireShot = game.add.audio('fireShot');
+  fireShot.volume = 0.5;
 }
 
 function _loadRobot() {
@@ -195,6 +211,7 @@ function _loadCoins() {
     coin.animations.add('coinsStart', [0, 1, 2, 3], 8, true);
     coin.animations.play("coinsStart");
   }
+  coinsAudio = game.add.audio('coinsAudio');
 }
 
 function _loadBoxes() {
@@ -331,6 +348,8 @@ var tween = game.add.tween(aliens).to({ x: 200 }, 2000, Phaser.Easing.Li
 
 function collectCoins(robot, coin) {
 
+  coinsAudio.play();
+  coinsAudio.volume = 0.5;
   coin.kill();
   score += 10;
   scoreText.text = 'Puntos: ' + score;
