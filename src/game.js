@@ -8,9 +8,13 @@ import Phaser from 'phaser';
 
 var game = new Phaser.Game(1200, 600, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update });
 
+<<<<<<< HEAD
 var robot, box, woman, player, groupPlatform, platform, coins, plataforma1, plataforma2, plataforma3, roca, tree1, tree2, sea1, sea2, enemy, fireWeapon, dinosaur, mainTheme, coinsAudio, fireShot;
+=======
+var robot, box, woman, player, groupPlatform, platform, coins, plataforma1, plataforma2, plataforma3, roca, tree1, tree2, tree3, sea1, sea2, enemy, fireWeapon, dinosaur;
+>>>>>>> 647072d81a99df7e5c43575603e7dadf753ae7a5
 var platforms, scoreText, score = 0, laser, mushroom1, mushroom2, jumpButton, cursors, fireButton, bush1, bush2, bush3, bush4, plataforma4, plataforma5, plataforma6;
-var explosions;
+var explosions, monstruo;
 
 function preload() {
   _loadSprites();
@@ -66,6 +70,7 @@ function _loadSprites() {
   game.load.image('roca', 'src/assets/shared/Stone.png');
   game.load.image('tree1', 'src/assets/shared/Tree_1.png');
   game.load.image('tree2', 'src/assets/shared/Tree_2.png');
+  game.load.image('tree3', 'src/assets/shared/Tree_3.png');
   game.load.image('mushroom1', 'src/assets/shared/Mushroom_1.png');
   game.load.image('mushroom2', 'src/assets/shared/Mushroom_2.png');
   game.load.image('bush1', 'src/assets/shared/Bush_1.png');
@@ -78,6 +83,8 @@ function _loadSprites() {
   game.load.spritesheet('fireWeapon', 'src/assets/shared/fireWeapon.png', 95, 300);
   game.load.spritesheet('dinosaur', 'src/assets/shared/dinosaurio.png', 99.27, 200);
   game.load.spritesheet('explosion', 'src/assets/shared/explosion.png', 95, 96);
+  game.load.spritesheet('monstruo', 'src/assets/shared/monstruo.png', 152, 280);
+
 }
 
 function _loadAudios(){
@@ -89,11 +96,12 @@ function _loadAudios(){
 
 function _loadComponents() {
   _loadBackgroundElements();
+  _loadEnemy();
+
   _loadPlatforms();
   _loadRobot();
   _loadCoins();
   _loadBoxes();
-  _loadEnemy();
   _loadFireWeapon();
   _loadExplosion();
 }
@@ -266,6 +274,10 @@ function _loadBackgroundElements() {
 
   //* TREE 2
   tree2 = game.add.sprite(850, 250, 'tree2');
+  tree2 = game.add.sprite(1600, 250, 'tree2');
+
+  // * TREE 3
+  tree3 = game.add.sprite(1200, 275, 'tree3');
 
   //** Mushroom
   mushroom1 = game.add.sprite(750, 509, "mushroom1");
@@ -293,13 +305,16 @@ function _loadEnemy() {
   // ENEMY
   enemy = game.add.sprite(900, 0, "enemy");
   dinosaur = game.add.sprite(700, 17, 'dinosaur');
+  monstruo = game.add.sprite(2320, 410, "monstruo");
 
-  game.physics.arcade.enable(enemy, dinosaur);
+  game.physics.arcade.enable(enemy, dinosaur, monstruo);
 
   enemy.enableBody = true;
   dinosaur.enableBody = true;
   enemy.width = 70;
   enemy.height = 200;
+  monstruo.width = 90;
+  monstruo.height = 160;
 
   enemy.body.bounce.y = 0.5;
   enemy.body.gravity.y = 300;
@@ -312,6 +327,9 @@ function _loadEnemy() {
 
   dinosaur.animations.add('idle', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], 20, true);
   dinosaur.animations.play("idle");
+
+  monstruo.animations.add('idle', [0, 1], 5, true);
+  monstruo.animations.play("idle");
 
   _loadMoveEnemy();
 
