@@ -170,6 +170,7 @@ function _loadPlatforms() {
   ground.body.immovable = true;
   ground1.body.immovable = true;
   ground2.body.immovable = true;
+  ground3.body.immovable = true;
 
   plataforma1 = platforms.create(555, 200, "platform1");
   plataforma2 = platforms.create(680, 200, "platform2");
