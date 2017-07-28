@@ -8,8 +8,9 @@ import Phaser from 'phaser';
 
 var game = new Phaser.Game(1200, 600, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update });
 
-var robot, box, woman, player, groupPlatform, platform, coins, plataforma1, plataforma2, plataforma3, roca, tree1, sea1, sea2, enemy, fireWeapon, dinosaur, mainTheme, coinsAudio, fireShot;
+var robot, box, woman, player, groupPlatform, platform, coins, plataforma1, plataforma2, plataforma3, roca, tree1, tree2, sea1, sea2, enemy, fireWeapon, dinosaur, mainTheme, coinsAudio, fireShot;
 var platforms, scoreText, score = 0, laser, mushroom1, mushroom2, jumpButton, cursors, fireButton, bush1, bush2, bush3, bush4, plataforma4, plataforma5, plataforma6;
+var explosions;
 
 function preload() {
   _loadSprites();
@@ -64,6 +65,7 @@ function _loadSprites() {
   game.load.image('bg', 'src/assets/shared/BG.png');
   game.load.image('roca', 'src/assets/shared/Stone.png');
   game.load.image('tree1', 'src/assets/shared/Tree_1.png');
+  game.load.image('tree2', 'src/assets/shared/Tree_2.png');
   game.load.image('mushroom1', 'src/assets/shared/Mushroom_1.png');
   game.load.image('mushroom2', 'src/assets/shared/Mushroom_2.png');
   game.load.image('bush1', 'src/assets/shared/Bush_1.png');
@@ -75,6 +77,7 @@ function _loadSprites() {
   game.load.spritesheet('enemy', 'src/assets/shared/enemic.png', 152, 450);
   game.load.spritesheet('fireWeapon', 'src/assets/shared/fireWeapon.png', 95, 300);
   game.load.spritesheet('dinosaur', 'src/assets/shared/dinosaurio.png', 99.27, 200);
+  game.load.spritesheet('explosion', 'src/assets/shared/explosion.png', 95, 96);
 }
 
 function _loadAudios(){
@@ -92,6 +95,7 @@ function _loadComponents() {
   _loadBoxes();
   _loadEnemy();
   _loadFireWeapon();
+  _loadExplosion();
 }
 
 function _checkForCollisions() {
@@ -104,8 +108,11 @@ function _checkForCollisions() {
   game.physics.arcade.collide(plataforma3, coins);
   game.physics.arcade.collide(box, coins);
   game.physics.arcade.overlap(robot, coins, collectCoins, null, this);
-}
+  game.physics.arcade.overlap(fireWeapon.bullets, enemy, destroyEnemy, null, this);
+  //  game.physics.arcade.overlap( dinosaur, fireWeapon.bullets,destroyDinosaur, null, this);
 
+
+}
 function _throwFireWeapon() {
   if (fireButton.isDown) {
     fireWeapon.fireAngle = 0;
@@ -150,7 +157,10 @@ function _moveWithCursos() {
 
 function _loadFireWeapon() {
   fireWeapon = game.add.weapon(5, 'fireWeapon');
-  game.physics.arcade.enable(fireWeapon);
+  // game.physics.arcade.enable(fireWeapon);
+  fireWeapon.enableBody = true;
+  //fireWeapon.physicsBodyType = Phaser.Physics.ARCADE;
+  fireWeapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS;
   fireWeapon.bulletSpeed = 300;
   fireWeapon.fireRate = 500;
   fireWeapon.trackSprite(robot, 100, 0);
@@ -160,6 +170,7 @@ function _loadFireWeapon() {
   fireShot.volume = 0.5;
 }
 
+
 function _loadRobot() {
   //ROBOT
   robot = game.add.sprite(100, game.world.height - 180, "robot");
@@ -167,6 +178,7 @@ function _loadRobot() {
 
   robot.body.gravity.y = 300;
   robot.body.collideWorldBounds = true;
+  robot.body.checkCollision = true;
 
   //Animació del robot
   robot.animations.add('idle', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 12, true);
@@ -220,16 +232,16 @@ function _loadBoxes() {
   box.enableBody = true;
   var b = box.create(300, 440, 'box');
   b.body.checkCollision.up = true;
-  b.body.checkCollision.down = false;
-  b.body.checkCollision.left = false;
-  b.body.checkCollision.right = false;
+  b.body.checkCollision.down = true;
+  b.body.checkCollision.left = true;
+  b.body.checkCollision.right = true;
   b.body.immovable = true;
 
   var b2 = box.create(450, 300, 'box');
   b2.body.checkCollision.up = true;
-  b2.body.checkCollision.down = false;
-  b2.body.checkCollision.left = false;
-  b2.body.checkCollision.right = false;
+  b2.body.checkCollision.down = true;
+  b2.body.checkCollision.left = true;
+  b2.body.checkCollision.right = true;
   b2.body.immovable = true;
 
   //Random boxes
@@ -252,6 +264,9 @@ function _loadBackgroundElements() {
   //* TREE
   tree1 = game.add.sprite(600, 508, "tree1");
 
+  //* TREE 2
+  tree2 = game.add.sprite(850, 250, 'tree2');
+
   //** Mushroom
   mushroom1 = game.add.sprite(750, 509, "mushroom1");
   mushroom2 = game.add.sprite(620, 162, "mushroom2");
@@ -263,10 +278,16 @@ function _loadBackgroundElements() {
   sea1 = game.add.sprite(2280, game.world.height - 40, "sea");
   sea1 = game.add.sprite(2408, game.world.height - 40, "sea");
   sea1 = game.add.sprite(2536, game.world.height - 40, "sea");
-
-
 }
-var limit = false;
+function _loadExplosion() {
+  explosions = game.add.group();
+
+  var explosionAnimation = explosions.create(0, 0, 'explosion', [0], false);
+  explosionAnimation.anchor.setTo(0.5, 0.5);
+  explosionAnimation.animations.add('explosion');
+}
+
+
 
 function _loadEnemy() {
   // ENEMY
@@ -285,18 +306,12 @@ function _loadEnemy() {
   enemy.body.collideWorldBounds = true;
 
 
-  enemy.animations.add('idle', [0, 1, 2, 3, 4, 5, 6, 7], 30, true);
+
+  enemy.animations.add('idle', [0, 1, 2, 3, 4, 5, 6, 7], 35, true);
   enemy.animations.play("idle");
 
-   dinosaur.animations.add('idle', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], 20, true);
-   dinosaur.animations.play("idle");
-
-
-  //Moviment
-  // var tween = game.add.tween(enemy).to({
-  //   x: 500
-  // }, 6000, Phaser.Easing.Linear.None, true, 0, 800, true);
-  // tween.
+  dinosaur.animations.add('idle', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], 20, true);
+  dinosaur.animations.play("idle");
 
   _loadMoveEnemy();
 
@@ -304,7 +319,7 @@ function _loadEnemy() {
   enemy.y = 502;
 
 }
-
+//Moviments
 function _loadMoveEnemy() {
   if (enemy.x === 900) {
     enemy.scale.x = 0.5;
@@ -318,33 +333,7 @@ function _loadMoveEnemy() {
     var tween = game.add.tween(enemy).to({ x: 900 }, 6000, Phaser.Easing.Linear.None, true);
   }
 
-
-
-
 }
-
-
-
-/*
-function aliensCreation() {
-
-for (var y = 0; y < 3; y++) {
-for (var x = 0; x < 4; x++) {
-var alien = aliens.create(x * 48, y * 50, 'alienEnemy');
-alien.anchor.setTo(0.5, 0.5);
-alien.animations.add('fly', [0, 1, 2, 3], 20, true);
-alien.play('fly');
-alien.body.moves = false;
-}
-}
-
-aliens.x = 100;
-aliens.y = 50;
-
-var tween = game.add.tween(aliens).to({ x: 200 }, 2000, Phaser.Easing.Linear.None, true, 0, 1000, true);
-
-//tween.onLoop.add(descend, this);
-} */
 
 function collectCoins(robot, coin) {
 
@@ -353,5 +342,28 @@ function collectCoins(robot, coin) {
   coin.kill();
   score += 10;
   scoreText.text = 'Puntos: ' + score;
-
 }
+
+function destroyEnemy(fireWeapon, enemy) {
+  fireWeapon.kill();
+  enemy.kill();
+  //Animació explosió
+  var explosionAnimation = explosions.getFirstExists(false);
+  explosionAnimation.reset(enemy.x + (enemy.body.width / 2), enemy.y + 70);
+  explosionAnimation.play('explosion', 30, false, true);
+
+  score += 100;
+}
+
+// function destroyDinosaur(dinosaur, fireWeapon) {
+//   fireWeapon.kill();
+//   dinosaur.kill();
+
+//   //Animació explosió
+//   var explosionAnimation = explosions.getFirstExists(false);
+//   explosionAnimation.reset(dinosaur.x + (dinosaur.body.width / 2), enemy.y + 70);
+//   explosionAnimation.play('explosion', 30, false, true);
+
+// }
+
+
