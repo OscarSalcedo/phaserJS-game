@@ -10,7 +10,7 @@ var game = new Phaser.Game(1200, 600, Phaser.CANVAS, 'phaser-example', { preload
 
 var robot, box, woman, player, groupPlatform, platform, coins, plataforma1, plataforma2, plataforma3, roca, tree1, tree2, tree3, sea1, sea2, enemy, fireWeapon, dinosaur;
 var platforms, scoreText, score = 0, laser, mushroom1, mushroom2, jumpButton, cursors, fireButton, bush1, bush2, bush3, bush4, plataforma4, plataforma5, plataforma6;
-var explosions, monstruo;
+var explosions, monstruo,sign2;
 
 function preload() {
   _loadSprites();
@@ -70,6 +70,7 @@ function _loadSprites() {
   game.load.image('bush4', 'src/assets/shared/Bush_4.png');
   game.load.image('sea', 'src/assets/shared/17.png');
   game.load.image('sea1', 'src/assets/shared/18.png');
+  game.load.image('sign2', 'src/assets/shared/Sign_2.png');
   game.load.spritesheet('enemy', 'src/assets/shared/enemic.png', 152, 450);
   game.load.spritesheet('fireWeapon', 'src/assets/shared/fireWeapon.png', 95, 300);
   game.load.spritesheet('dinosaur', 'src/assets/shared/dinosaurio.png', 99.27, 200);
@@ -81,7 +82,6 @@ function _loadSprites() {
 function _loadComponents() {
   _loadBackgroundElements();
   _loadEnemy();
-
   _loadPlatforms();
   _loadRobot();
   _loadCoins();
@@ -264,6 +264,10 @@ function _loadBackgroundElements() {
 
   // *** Bush
   bush1 = game.add.sprite(1200, 488, "bush1");
+
+  //* Sign
+
+  sign2 = game.add.sprite(1350, 488, "sign2");
 
   //** Sea */
   sea1 = game.add.sprite(2280, game.world.height - 40, "sea");
