@@ -162,6 +162,7 @@ function _loadRobot() {
 
   robot.body.gravity.y = 300;
   robot.body.collideWorldBounds = true;
+  robot.body.checkCollision = true;
 
   //Animació del robot
   robot.animations.add('idle', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 12, true);
@@ -214,16 +215,16 @@ function _loadBoxes() {
   box.enableBody = true;
   var b = box.create(300, 440, 'box');
   b.body.checkCollision.up = true;
-  b.body.checkCollision.down = false;
-  b.body.checkCollision.left = false;
-  b.body.checkCollision.right = false;
+  b.body.checkCollision.down = true;
+  b.body.checkCollision.left = true;
+  b.body.checkCollision.right = true;
   b.body.immovable = true;
 
   var b2 = box.create(450, 300, 'box');
   b2.body.checkCollision.up = true;
-  b2.body.checkCollision.down = false;
-  b2.body.checkCollision.left = false;
-  b2.body.checkCollision.right = false;
+  b2.body.checkCollision.down = true;
+  b2.body.checkCollision.left = true;
+  b2.body.checkCollision.right = true;
   b2.body.immovable = true;
 
   //Random boxes
