@@ -24,8 +24,8 @@ function create() {
   game.physics.startSystem(Phaser.Physics.ARCADE);
   //Sound
   mainTheme = game.add.audio('theme');
-  mainTheme.play();
-  mainTheme.volume = 0.2;
+  //mainTheme.play();
+  //mainTheme.volume = 0.2;
 
   _loadComponents();
   //Moviment de la camara
@@ -399,7 +399,7 @@ function _loadMoveEnemy() {
 
 function collectCoins(robot, coin) {
 
-  coinsAudio.play();
+  //coinsAudio.play();
   coinsAudio.volume = 0.5;
   coin.kill();
   score += 10;
