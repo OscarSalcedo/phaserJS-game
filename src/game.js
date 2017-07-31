@@ -10,7 +10,7 @@ var game = new Phaser.Game(1200, 600, Phaser.CANVAS, 'phaser-example', { preload
 
 var robot, box, woman, player, groupPlatform, platform, coins, plataforma1, plataforma2, plataforma3, roca, tree1, tree2, tree3, sea1, sea2, enemy, fireWeapon, dinosaur, mainTheme, coinsAudio, fireShot;
 var platforms, scoreText, score = 0, laser, mushroom1, mushroom2, jumpButton, cursors, fireButton, bush1, bush2, bush3, bush4, plataforma4, plataforma5, plataforma6;
-var explosions, plant, sign2, deadRobot;
+var explosions, plant, sign2, deadRobot, alive = true, notShoot = false, textGameOver;
 
 function preload() {
   _loadSprites();
@@ -103,11 +103,13 @@ function _loadComponents() {
   _loadBoxes();
   _loadFireWeapon();
   _loadExplosion();
-   //_loadDeadRobot();
+  //_loadDeadRobot();
 }
 
 function _checkForCollisions() {
   game.physics.arcade.collide(robot, platforms);
+  game.physics.arcade.collide(deadRobot, platforms);
+  game.physics.arcade.collide(deadRobot, enemy);
   game.physics.arcade.collide(coins, platforms);
   game.physics.arcade.collide(box, platforms);
   game.physics.arcade.collide(box, robot);
@@ -123,23 +125,28 @@ function _checkForCollisions() {
 }
 
 function _throwFireWeapon() {
-
-  if (fireButton.isDown && robot.viewDirection === 'right') {
-    fireWeapon.trackSprite(robot, 100, 0);
-    fireWeapon.fireAngle = 0;
-    fireWeapon.bulletAngleOffSet = 180;
-    fireWeapon.fire();
-    fireShot.play()
-    fireShot.volume = 1;
-    //fireWeapon.animations.play('fire');
+  if (alive === true) {
+    if (fireButton.isDown && robot.viewDirection === 'right') {
+      fireWeapon.trackSprite(robot, 100, 0);
+      fireWeapon.fireAngle = 0;
+      fireWeapon.bulletAngleOffSet = 180;
+      fireWeapon.fire();
+      fireShot.play()
+      fireShot.volume = 1;
+      //fireWeapon.animations.play('fire');
+    }
+    else if (fireButton.isDown && robot.viewDirection === 'left') {
+      fireWeapon.trackSprite(robot, -50, 80);
+      fireWeapon.fireAngle = 180;
+      fireWeapon.bulletAngleOffSet = -180;
+      fireWeapon.fire();
+      fireShot.play()
+      fireShot.volume = 1;
+    }
   }
-  else if (fireButton.isDown && robot.viewDirection === 'left') {
-    fireWeapon.trackSprite(robot, -50, 80);
-    fireWeapon.fireAngle = 180;
-    fireWeapon.bulletAngleOffSet = -180;
-    fireWeapon.fire();
-    fireShot.play()
-    fireShot.volume = 1;
+  else {
+    debugger;
+    fireShot.volume = 0;
   }
 }
 
@@ -151,7 +158,7 @@ function _moveWithCursos() {
     robot.viewDirection = 'left';
   }
   else if (cursors.right.isDown) {
-    robot.body.velocity.x = 300;;
+    robot.body.velocity.x = 300;
     robot.animations.play("run");
     robot.scale.x = 1;
     robot.viewDirection = 'right';
@@ -164,7 +171,6 @@ function _moveWithCursos() {
     robot.play("idle");
     robot.body.velocity.x = 0;
   }
-
   if (cursors.up.isDown && robot.body.touching.down) {
     robot.animations.play("jump");
     robot.body.velocity.y = -300;
@@ -266,7 +272,7 @@ function _loadBoxes() {
   //b.body.checkCollision.down = true;
   //b.body.checkCollision.left = true;
   // b.body.checkCollision.right = true;
- // b.body.immovable = true;
+  // b.body.immovable = true;
 
   var b2 = box.create(450, 300, 'box');
   b2.body.checkCollision.up = true;
@@ -432,15 +438,28 @@ function destroyPlant(plant, fireWeapon) {
 }
 
 function destroyPlayer(robot, enemy) {
-  // _loadDeadRobot(robot);
+
+  var x = robot.body.x;
+  var y = robot.body.y;
   robot.kill();
-  robot.reset(0,0);
-  //  robot.animations.play("dead");
 
+  deadRobot = game.add.sprite(robot.x, robot.y - 100, "deadRobot");
+  deadRobot.animations.add('deadRobot', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 8, false);
+  deadRobot.animations.play("deadRobot");
+  game.physics.arcade.enable(deadRobot);
+  alive = false;
+
+  //TEXT GAME OVER
+  textGameOver = game.add.text(deadRobot.x - 100, deadRobot.y - 100, " GAME OVER ");
+  textGameOver.fontSize = 50;
+  game.input.onTap.addOnce(restart, this);
 }
 
-function _loadDeadRobot(robot) {
-  robot = game.add.sprite(robot.body.x, robot.body.y -90, "deadRobot");
-  // game.physics.arcade.enable(robot);
-  robot.animations.play("dead");
+function restart() {
+  deadRobot.kill();
+  textGameOver.visible = false;
+  robot.reset(100, 100);
+  alive = true;
 }
+
+
