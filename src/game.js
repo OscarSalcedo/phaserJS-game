@@ -78,7 +78,7 @@ function _loadSprites() {
   game.load.image('sign2', 'src/assets/shared/Sign_2.png');
   game.load.spritesheet('enemy', 'src/assets/shared/enemic.png', 152, 450);
   game.load.spritesheet('fireWeapon', 'src/assets/shared/fireWeapon.png', 95, 300);
-  game.load.spritesheet('dinosaur', 'src/assets/shared/dinosaurio.png', 99.27, 200);
+  game.load.spritesheet('dinosaur', 'src/assets/shared/dinosaurio.png', 99.27, 184);
   game.load.spritesheet('explosion', 'src/assets/shared/explosion.png', 95, 96);
   game.load.spritesheet('plant', 'src/assets/shared/plant.png', 152, 280);
   game.load.spritesheet('deadRobot', 'src/assets/shared/deadRobot.png', 120, 300);
@@ -103,7 +103,7 @@ function _loadComponents() {
   _loadBoxes();
   _loadFireWeapon();
   _loadExplosion();
-  // _loadDeadRobot();
+   //_loadDeadRobot();
 }
 
 function _checkForCollisions() {
@@ -119,7 +119,7 @@ function _checkForCollisions() {
   game.physics.arcade.overlap(fireWeapon.bullets, enemy, destroyEnemy, null, this);
   game.physics.arcade.overlap(dinosaur, fireWeapon.bullets, destroyDinosaur, null, this);
   game.physics.arcade.overlap(plant, fireWeapon.bullets, destroyPlant, null, this);
-  //game.physics.arcade.overlap(robot, enemy, destroyPlayer, null, this);
+  game.physics.arcade.overlap(robot, enemy, destroyPlayer, null, this);
 }
 
 function _throwFireWeapon() {
@@ -199,7 +199,7 @@ function _loadRobot() {
   robot.animations.add('idle', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 12, true);
   robot.animations.add('run', [10, 11, 12, 13, 14, 15, 16, 17], 17, true);
   robot.animations.add('jump', [18, 19, 20, 21, 22, 23, 24, 25, 26, 27], 10, true);
-  robot.animations.add('dead', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 10, false);
+  robot.animations.add('deadRobot', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 10, false);
 
 }
 function _loadPlatforms() {
@@ -261,12 +261,12 @@ function _loadBoxes() {
   //** BOX
   box = game.add.group();
   box.enableBody = true;
-  var b = box.create(300, 440, 'box');
+  //var b = box.create(300, 440, 'box');
   // b.body.checkCollision.up = true;
   //b.body.checkCollision.down = true;
   //b.body.checkCollision.left = true;
   // b.body.checkCollision.right = true;
-  b.body.immovable = true;
+ // b.body.immovable = true;
 
   var b2 = box.create(450, 300, 'box');
   b2.body.checkCollision.up = true;
@@ -431,15 +431,16 @@ function destroyPlant(plant, fireWeapon) {
   explosionAnimation.play('explosion', 30, false, true);
 }
 
-// function destroyPlayer(robot, enemy) {
-//   robot.kill();
+function destroyPlayer(robot, enemy) {
+  // _loadDeadRobot(robot);
+  robot.kill();
+  robot.reset(0,0);
+  //  robot.animations.play("dead");
 
-//   // _loadDeadRobot();
-// }
+}
 
-
-// function _loadDeadRobot() {
-//   deadRobot = game.add.sprite(robot.body.x, robot.body.y -90, "deadRobot");
-//   game.physics.arcade.enable(deadRobot);
-//   deadRobot.animations.play("dead");
-// }
+function _loadDeadRobot(robot) {
+  robot = game.add.sprite(robot.body.x, robot.body.y -90, "deadRobot");
+  // game.physics.arcade.enable(robot);
+  robot.animations.play("dead");
+}
