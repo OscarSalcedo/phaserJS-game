@@ -10,7 +10,7 @@ var game = new Phaser.Game(1200, 600, Phaser.CANVAS, 'phaser-example', { preload
 
 var robot, box, woman, player, groupPlatform, platform, coins, plataforma1, plataforma2, plataforma3, roca, tree1, tree2, tree3, sea1, sea2, enemy, fireWeapon, dinosaur, mainTheme, coinsAudio, fireShot;
 var platforms, scoreText, score = 0, laser, mushroom1, mushroom2, jumpButton, cursors, fireButton, bush1, bush2, bush3, bush4, plataforma4, plataforma5, plataforma6;
-var explosions, monstruo,sign2;
+var explosions, plant, sign2, deadRobot;
 
 function preload() {
   _loadSprites();
@@ -19,7 +19,7 @@ function preload() {
 
 function create() {
 
-  game.world.setBounds(0, 0, 3000, 600);
+  game.world.setBounds(0, 0, 6000, 600);
   //*** ENABLE PHYSICS
   game.physics.startSystem(Phaser.Physics.ARCADE);
   //Sound
@@ -78,28 +78,32 @@ function _loadSprites() {
   game.load.image('sign2', 'src/assets/shared/Sign_2.png');
   game.load.spritesheet('enemy', 'src/assets/shared/enemic.png', 152, 450);
   game.load.spritesheet('fireWeapon', 'src/assets/shared/fireWeapon.png', 95, 300);
-  game.load.spritesheet('dinosaur', 'src/assets/shared/dinosaurio.png', 99.27, 200);
+  game.load.spritesheet('dinosaur', 'src/assets/shared/dinosaurio.png', 99.27, 184);
   game.load.spritesheet('explosion', 'src/assets/shared/explosion.png', 95, 96);
-  game.load.spritesheet('monstruo', 'src/assets/shared/monstruo.png', 152, 280);
+  game.load.spritesheet('plant', 'src/assets/shared/plant.png', 152, 280);
+  game.load.spritesheet('deadRobot', 'src/assets/shared/deadRobot.png', 120, 300);
 
 }
 
-function _loadAudios(){
-  game.load.audio('theme', 'src/assets/audio/mario_theme_song_acapella.mp3');
-  game.load.audio('fireShot','src/assets/audio/catapultaFuego.mp3');
+function _loadAudios() {
+  // game.load.audio('theme', 'src/assets/audio/mario_theme_song_acapella.mp3');
+  // game.load.audio('fireShot','src/assets/audio/catapultaFuego.mp3');
   //game.load.audio('fireShot' ,'src/assets/audio/hadouken.mp3');
-  game.load.audio('coinsAudio', 'src/assets/audio/coinMario.mp3');
+  // game.load.audio('coinsAudio', 'src/assets/audio/coinMario.mp3');
 }
 
 function _loadComponents() {
   _loadBackgroundElements();
   _loadEnemy();
+  _loadDinosaur();
+  _loadPlant();
   _loadPlatforms();
   _loadRobot();
   _loadCoins();
   _loadBoxes();
   _loadFireWeapon();
   _loadExplosion();
+   //_loadDeadRobot();
 }
 
 function _checkForCollisions() {
@@ -113,13 +117,14 @@ function _checkForCollisions() {
   game.physics.arcade.collide(box, coins);
   game.physics.arcade.overlap(robot, coins, collectCoins, null, this);
   game.physics.arcade.overlap(fireWeapon.bullets, enemy, destroyEnemy, null, this);
-  //  game.physics.arcade.overlap( dinosaur, fireWeapon.bullets,destroyDinosaur, null, this);
-
-
+  game.physics.arcade.overlap(dinosaur, fireWeapon.bullets, destroyDinosaur, null, this);
+  game.physics.arcade.overlap(plant, fireWeapon.bullets, destroyPlant, null, this);
+  game.physics.arcade.overlap(robot, enemy, destroyPlayer, null, this);
 }
+
 function _throwFireWeapon() {
 
-  if (fireButton.isDown && robot.viewDirection==='right') {
+  if (fireButton.isDown && robot.viewDirection === 'right') {
     fireWeapon.trackSprite(robot, 100, 0);
     fireWeapon.fireAngle = 0;
     fireWeapon.bulletAngleOffSet = 180;
@@ -128,7 +133,7 @@ function _throwFireWeapon() {
     fireShot.volume = 1;
     //fireWeapon.animations.play('fire');
   }
-  else if (fireButton.isDown && robot.viewDirection==='left') {
+  else if (fireButton.isDown && robot.viewDirection === 'left') {
     fireWeapon.trackSprite(robot, -50, 80);
     fireWeapon.fireAngle = 180;
     fireWeapon.bulletAngleOffSet = -180;
@@ -170,7 +175,7 @@ function _loadFireWeapon() {
   fireWeapon = game.add.weapon(5, 'fireWeapon');
   // game.physics.arcade.enable(fireWeapon);
   fireWeapon.enableBody = true;
-  //fireWeapon.physicsBodyType = Phaser.Physics.ARCADE;
+  fireWeapon.physicsBodyType = Phaser.Physics.ARCADE;
   fireWeapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS;
   fireWeapon.bulletSpeed = 300;
   fireWeapon.fireRate = 500;
@@ -188,12 +193,14 @@ function _loadRobot() {
 
   robot.body.gravity.y = 300;
   robot.body.collideWorldBounds = true;
-  robot.body.checkCollision = true;
+  // robot.body.checkCollision = true;
 
   //Animació del robot
   robot.animations.add('idle', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 12, true);
   robot.animations.add('run', [10, 11, 12, 13, 14, 15, 16, 17], 17, true);
   robot.animations.add('jump', [18, 19, 20, 21, 22, 23, 24, 25, 26, 27], 10, true);
+  robot.animations.add('deadRobot', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 10, false);
+
 }
 function _loadPlatforms() {
   //*** PLATAFORMAS */
@@ -212,12 +219,19 @@ function _loadPlatforms() {
 
   plataforma1 = platforms.create(555, 200, "platform1");
   plataforma2 = platforms.create(680, 200, "platform2");
-  plataforma3 = platforms.create(800, 200, "platform3");
+  plataforma3 = platforms.create(808, 200, "platform3");
 
   plataforma1.body.immovable = true;
   plataforma2.body.immovable = true;
   plataforma3.body.immovable = true;
 
+  plataforma1 = platforms.create(2000, 350, "platform1");
+  //plataforma2 = platforms.create(680, 400, "platform2");
+  plataforma3 = platforms.create(2125, 350, "platform3");
+
+  plataforma1.body.immovable = true;
+  plataforma2.body.immovable = true;
+  plataforma3.body.immovable = true;
   game.physics.arcade.enable(plataforma1, plataforma2, plataforma3);
 }
 
@@ -226,10 +240,17 @@ function _loadCoins() {
   coins = game.add.group();
   coins.enableBody = true;
 
-  for (var i = 0; i < 12; i++) {
+  for (var i = 4; i < 12; i++) {
     var coin = coins.create(i * 70, 0, 'coins');
     coin.body.gravity.y = 300;
     coin.body.bounce.y = 0.7 + Math.random() * 0.2;
+    coin.animations.add('coinsStart', [0, 1, 2, 3], 8, true);
+    coin.animations.play("coinsStart");
+  }
+
+  for (var i = 2; i < 10; i++) {
+    var coin = coins.create(i * 1000, 0, 'coins');
+    coin.body.gravity.y = 300;
     coin.animations.add('coinsStart', [0, 1, 2, 3], 8, true);
     coin.animations.play("coinsStart");
   }
@@ -240,19 +261,23 @@ function _loadBoxes() {
   //** BOX
   box = game.add.group();
   box.enableBody = true;
-  var b = box.create(300, 440, 'box');
-  b.body.checkCollision.up = true;
-  b.body.checkCollision.down = true;
-  b.body.checkCollision.left = true;
-  b.body.checkCollision.right = true;
-  b.body.immovable = true;
+  //var b = box.create(300, 440, 'box');
+  // b.body.checkCollision.up = true;
+  //b.body.checkCollision.down = true;
+  //b.body.checkCollision.left = true;
+  // b.body.checkCollision.right = true;
+ // b.body.immovable = true;
 
   var b2 = box.create(450, 300, 'box');
   b2.body.checkCollision.up = true;
-  b2.body.checkCollision.down = true;
-  b2.body.checkCollision.left = true;
-  b2.body.checkCollision.right = true;
+  // b2.body.checkCollision.down = true;
+  // b2.body.checkCollision.left = true;
+  // b2.body.checkCollision.right = true;
   b2.body.immovable = true;
+
+  var b3 = box.create(1900, 475, 'box');
+  // b3.body.gravity.y = 200;
+  b3.body.immovable = true;
 
   //Random boxes
   // for (var i = 1; i < 10; i++) {
@@ -265,7 +290,7 @@ function _loadBoxes() {
 }
 
 function _loadBackgroundElements() {
-  var bg = game.add.tileSprite(0, 0, 3000, 600, 'bg');
+  var bg = game.add.tileSprite(0, 0, 6000, 600, 'bg');
   game.add.sprite(3000, 600, 'bg');
 
   //*** ROCA */
@@ -287,6 +312,7 @@ function _loadBackgroundElements() {
 
   // *** Bush
   bush1 = game.add.sprite(1200, 488, "bush1");
+  bush3 = game.add.sprite(1670, 510, "bush3");
 
   //* Sign
 
@@ -307,41 +333,49 @@ function _loadExplosion() {
 
 
 
-function _loadEnemy() {
-  // ENEMY
-  enemy = game.add.sprite(900, 0, "enemy");
-  dinosaur = game.add.sprite(700, 17, 'dinosaur');
-  monstruo = game.add.sprite(2320, 410, "monstruo");
+//** LOAD ENEMY
 
-  game.physics.arcade.enable(enemy, dinosaur, monstruo);
+function _loadEnemy() {
+
+  enemy = game.add.sprite(900, 0, "enemy");
+
+  game.physics.arcade.enable(enemy);
 
   enemy.enableBody = true;
-  dinosaur.enableBody = true;
   enemy.width = 70;
   enemy.height = 200;
-  monstruo.width = 90;
-  monstruo.height = 160;
 
   enemy.body.bounce.y = 0.5;
   enemy.body.gravity.y = 300;
   enemy.body.collideWorldBounds = true;
 
 
-
   enemy.animations.add('idle', [0, 1, 2, 3, 4, 5, 6, 7], 35, true);
   enemy.animations.play("idle");
-
-  dinosaur.animations.add('idle', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], 20, true);
-  dinosaur.animations.play("idle");
-
-  monstruo.animations.add('idle', [0, 1], 5, true);
-  monstruo.animations.play("idle");
 
   _loadMoveEnemy();
 
   enemy.x = 200;
   enemy.y = 502;
+}
+function _loadPlant() {
+  plant = game.add.sprite(2320, 410, "plant");
+  game.physics.arcade.enable(plant);
 
+  plant.width = 90;
+  plant.height = 160;
+
+  plant.animations.add('idle', [0, 1], 5, true);
+  plant.animations.play("idle");
+}
+
+function _loadDinosaur() {
+  dinosaur = game.add.sprite(700, 17, 'dinosaur');
+  game.physics.arcade.enable(dinosaur);
+
+  dinosaur.enableBody = true;
+  dinosaur.animations.add('idle', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], 20, true);
+  dinosaur.animations.play("idle");
 }
 //Moviments
 function _loadMoveEnemy() {
@@ -353,10 +387,8 @@ function _loadMoveEnemy() {
   } else if (enemy.x === 500) {
 
     enemy.scale.x = -0.5;
-
     var tween = game.add.tween(enemy).to({ x: 900 }, 6000, Phaser.Easing.Linear.None, true);
   }
-
 }
 
 function collectCoins(robot, coin) {
@@ -376,18 +408,39 @@ function destroyEnemy(fireWeapon, enemy) {
   explosionAnimation.reset(enemy.x + (enemy.body.width / 2), enemy.y + 70);
   explosionAnimation.play('explosion', 30, false, true);
 
-  score += 100;
+  // score += 100;
 }
 
-// function destroyDinosaur(dinosaur, fireWeapon) {
-//   fireWeapon.kill();
-//   dinosaur.kill();
+function destroyDinosaur(dinosaur, fireWeapon) {
+  fireWeapon.kill();
+  dinosaur.kill();
 
-//   //Animació explosió
-//   var explosionAnimation = explosions.getFirstExists(false);
-//   explosionAnimation.reset(dinosaur.x + (dinosaur.body.width / 2), enemy.y + 70);
-//   explosionAnimation.play('explosion', 30, false, true);
+  //Animació explosió
+  var explosionAnimation = explosions.getFirstExists(false);
+  explosionAnimation.reset(dinosaur.x + 40, dinosaur.y + 130);
+  explosionAnimation.play('explosion', 30, false, true);
+}
 
-// }
+function destroyPlant(plant, fireWeapon) {
+  fireWeapon.kill();
+  plant.kill();
 
+  //Animació explosió
+  var explosionAnimation = explosions.getFirstExists(false);
+  explosionAnimation.reset(plant.x + 50, plant.y + 120);
+  explosionAnimation.play('explosion', 30, false, true);
+}
 
+function destroyPlayer(robot, enemy) {
+  // _loadDeadRobot(robot);
+  robot.kill();
+  robot.reset(0,0);
+  //  robot.animations.play("dead");
+
+}
+
+function _loadDeadRobot(robot) {
+  robot = game.add.sprite(robot.body.x, robot.body.y -90, "deadRobot");
+  // game.physics.arcade.enable(robot);
+  robot.animations.play("dead");
+}
