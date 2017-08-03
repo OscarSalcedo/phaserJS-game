@@ -10,7 +10,7 @@ var game = new Phaser.Game(1200, 600, Phaser.CANVAS, 'phaser-example', { preload
 
 var robot, box, woman, player, groupPlatform, platform, coins, plataforma1, plataforma2, plataforma3, roca, tree1, tree2, tree3, sea1, sea2, enemy, fireWeapon, dinosaur, mainTheme, coinsAudio, fireShot;
 var platforms, scoreText, score = 0, laser, mushroom1, mushroom2, jumpButton, cursors, fireButton, bush1, bush2, bush3, bush4, plataforma4, plataforma5, plataforma6;
-var explosions, plant, sign2, deadRobot, alive = true, notShoot = false, textGameOver;
+var explosions, plant, sign2, deadRobot, alive = true, notShoot = false, textGameOver, diglet;
 
 function preload() {
   _loadSprites();
@@ -82,6 +82,7 @@ function _loadSprites() {
   game.load.spritesheet('explosion', 'src/assets/shared/explosion.png', 95, 96);
   game.load.spritesheet('plant', 'src/assets/shared/plant.png', 152, 280);
   game.load.spritesheet('deadRobot', 'src/assets/shared/deadRobot.png', 120, 300);
+  game.load.spritesheet('diglet', 'src/assets/shared/diglet.png', 208, 350);
 
 }
 
@@ -103,6 +104,7 @@ function _loadComponents() {
   _loadBoxes();
   _loadFireWeapon();
   _loadExplosion();
+  _loadDiglet();
   //_loadDeadRobot();
 }
 
@@ -236,9 +238,26 @@ function _loadPlatforms() {
   plataforma3 = platforms.create(2125, 350, "platform3");
 
   plataforma1.body.immovable = true;
+  plataforma2.body.immovable = true
+  plataforma3.body.immovable = true;
+  game.physics.arcade.enable(plataforma1, plataforma3);
+
+  plataforma1 = platforms.create(3200, 310, "platform1");
+  plataforma2 = platforms.create(3325, 310, "platform2");
+  plataforma2 = platforms.create(3450, 310, "platform2");
+  plataforma2.body.immovable = true;
+  plataforma2 = platforms.create(3575, 310, "platform2");
+  plataforma2.body.immovable = true;
+  plataforma2 = platforms.create(3700, 310, "platform2");
+  plataforma2.body.immovable = true;
+  plataforma3 = platforms.create(3825, 310, "platform3");
+
+  plataforma1.body.immovable = true;
   plataforma2.body.immovable = true;
   plataforma3.body.immovable = true;
   game.physics.arcade.enable(plataforma1, plataforma2, plataforma3);
+
+
 }
 
 function _loadCoins() {
@@ -272,7 +291,7 @@ function _loadBoxes() {
   //b.body.checkCollision.down = true;
   //b.body.checkCollision.left = true;
   // b.body.checkCollision.right = true;
-  // b.body.immovable = true;
+  //b.body.immovable = true;
 
   var b2 = box.create(450, 300, 'box');
   b2.body.checkCollision.up = true;
@@ -284,6 +303,15 @@ function _loadBoxes() {
   var b3 = box.create(1900, 475, 'box');
   // b3.body.gravity.y = 200;
   b3.body.immovable = true;
+
+  // var b4 = box.create(2995, 420, 'box');
+  var b4 = box.create(2995, 400, 'box');
+  b4.body.immovable = true;
+  var b5 = box.create(2995, 475, 'box');
+  b5.body.immovable = true;
+  var b6 = box.create(2920, 475, 'box');
+  b6.body.immovable = true;
+
 
   //Random boxes
   // for (var i = 1; i < 10; i++) {
@@ -341,7 +369,7 @@ function _loadExplosion() {
 
 //** LOAD ENEMY
 
-function _loadEnemy() {
+function _loadEnemy() {  
 
   enemy = game.add.sprite(900, 0, "enemy");
 
@@ -382,6 +410,13 @@ function _loadDinosaur() {
   dinosaur.enableBody = true;
   dinosaur.animations.add('idle', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], 20, true);
   dinosaur.animations.play("idle");
+}
+function _loadDiglet() {
+  diglet = game.add.sprite(3600, 210, 'diglet');
+  diglet.width = 70;
+  diglet.height = 120;
+  diglet.animations.add('idle', [0, 1, 2, 3, 4, 5, 6, 7], 12, true);
+  diglet.animations.play("idle");
 }
 //Moviments
 function _loadMoveEnemy() {
